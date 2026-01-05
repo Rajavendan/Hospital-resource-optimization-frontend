@@ -36,24 +36,25 @@ const BillingDashboard = () => {
     return (
         <div className="p-6 max-w-7xl mx-auto">
             <h1 className="text-2xl font-bold mb-6 flex items-center gap-2 text-slate-800">
-                <CreditCard className="text-green-600" /> Billing & Payments
+                <CreditCard className="text-white" /> 
+                <h1 className='text-white'>Billing & Payments</h1>
             </h1>
 
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                    <h2 className="font-semibold text-slate-700">Pending Test Payments</h2>
+            <div className="bg-black rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div className="p-4 border-b border-slate-100 bg-black flex justify-between items-center">
+                    <h2 className="font-semibold text-white">Pending Test Payments</h2>
                     <span className="bg-orange-100 text-orange-700 text-xs px-2 py-1 rounded-full font-bold">
                         {pending.length} Pending
                     </span>
                 </div>
                 <table className="w-full text-left">
-                    <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm uppercase">
+                    <thead className="bg-black border-b border-slate-200 text-slate-500 text-sm uppercase">
                         <tr>
-                            <th className="p-4 font-medium">Patient</th>
-                            <th className="p-4 font-medium">Test Details</th>
-                            <th className="p-4 font-medium">Prescribed By</th>
-                            <th className="p-4 font-medium">Amount</th>
-                            <th className="p-4 font-medium text-right">Action</th>
+                            <th className="p-4 font-medium text-white">Patient</th>
+                            <th className="p-4 font-medium text-white">Test Details</th>
+                            <th className="p-4 font-medium text-white">Prescribed By</th>
+                            <th className="p-4 font-medium text-white">Amount</th>
+                            <th className="p-4 font-medium text-right text-white">Action</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -63,20 +64,20 @@ const BillingDashboard = () => {
                             <tr><td colSpan="5" className="p-8 text-center text-slate-500">No pending payments found.</td></tr>
                         ) : (
                             pending.map(item => (
-                                <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                                <tr key={item.id} className="transition-colors">
                                     <td className="p-4">
-                                        <div className="font-bold text-slate-800">{item.patient?.name}</div>
-                                        <div className="text-xs text-slate-500">ID: {item.patient?.id}</div>
+                                        <div className="font-bold text-white">{item.patient?.name}</div>
+                                        <div className="text-xs text-white">ID: {item.patient?.id}</div>
                                     </td>
                                     <td className="p-4">
-                                        <div className="font-medium text-slate-700">{item.test?.name}</div>
-                                        <div className="text-xs text-slate-500">{item.test?.department}</div>
+                                        <div className="font-medium text-white">{item.test?.name}</div>
+                                        <div className="text-xs text-white">{item.test?.department}</div>
                                     </td>
-                                    <td className="p-4 text-slate-600">
+                                    <td className="p-4 text-white">
                                         Dr. {item.doctor?.name}
                                     </td>
                                     <td className="p-4">
-                                        <span className="font-bold text-slate-800">${item.test?.cost}</span>
+                                        <span className="font-bold text-white">${item.test?.cost}</span>
                                     </td>
                                     <td className="p-4 text-right">
                                         <button

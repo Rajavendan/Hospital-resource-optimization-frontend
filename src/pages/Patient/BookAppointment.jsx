@@ -75,9 +75,10 @@ const BookAppointment = () => {
                 time: selectedTime,
                 dept: selectedDepartment
             });
-        } catch (err) {
-            console.error("Booking failed", err);
-            toast.error(err.response?.data?.message || "Booking failed. Please try again.");
+        } catch (error) {
+            console.error("Booking failed:", error);
+            const msg = error.response?.data?.message || "Failed to book appointment";
+            toast.error(msg);
         }
     };
 
@@ -96,7 +97,7 @@ const BookAppointment = () => {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600">
                     <CheckCircle size={32} />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-800 mb-2">Booking Confirmed!</h2>
+                <h2 className="text-2xl font-bold text-white mb-2 ">Booking Confirmed!</h2>
                 <div className="bg-slate-50 rounded-xl p-4 text-left space-y-3 mt-6">
                     <div className="flex justify-between">
                         <span className="text-slate-500">Doctor</span>
@@ -126,15 +127,15 @@ const BookAppointment = () => {
     }
 
     return (
-        <div className="max-w-2xl mx-auto">
-            <h1 className="text-2xl font-bold text-slate-800 mb-6">Book New Appointment</h1>
+        <div className="max-w-2xl mx-auto ">
+            <h1 className="text-2xl font-bold text-slate mb-6">Book New Appointment</h1>
 
-            <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-8">
+            <div className="bg-black rounded-xl shadow-sm border border-slate-100 p-8">
                 <form onSubmit={handleBook} className="space-y-6">
 
                     {/* Department Logic */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Department</label>
+                        <label className="block text-sm  text-slate mb-2 font-bold">Department</label>
                         <select
                             className="w-full p-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={selectedDepartment}
@@ -150,7 +151,7 @@ const BookAppointment = () => {
 
                     {/* Doctor Logic */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Doctor</label>
+                        <label className="block text-sm font-bold text-slate mb-2">Doctor</label>
                         <div className="relative">
                             <User className="absolute left-3 top-3.5 text-slate-400" size={20} />
                             <select
@@ -170,7 +171,7 @@ const BookAppointment = () => {
 
                     {/* Date Logic */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Preferred Date</label>
+                        <label className="block text-sm font-bold text-slate mb-2">Preferred Date</label>
                         <div className="relative">
                             <Calendar className="absolute left-3 top-3.5 text-slate-400" size={20} />
                             <input
@@ -186,7 +187,7 @@ const BookAppointment = () => {
 
                     {/* Time Logic */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Preferred Time</label>
+                        <label className="block text-sm font-bold text-slate mb-2">Preferred Time</label>
                         <div className="relative">
                             <Clock className="absolute left-3 top-3.5 text-slate-400" size={20} />
                             <select

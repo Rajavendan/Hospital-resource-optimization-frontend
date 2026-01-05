@@ -136,7 +136,7 @@ const StaffManagement = () => {
         <div className="p-8 max-w-7xl mx-auto space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2 text-white">
                         <Briefcase className="text-blue-600" />
                         Staff Management
                     </h1>
@@ -165,46 +165,46 @@ const StaffManagement = () => {
                     placeholder="Search Staff via Name or Email..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full pl-10 pr-4 py-3 bg-purple border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <table className="w-full text-left border-collapse">
-                    <thead className="bg-slate-50 text-slate-600 text-sm uppercase tracking-wider">
+            <div className="bg-blue rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <table className="w-full text-left border-collapse bg-blue">
+                    <thead className="bg-slack-50 text-slate-600 text-sm uppercase tracking-wider">
                         <tr>
-                            <th className="p-4 border-b">Staff Name</th>
-                            <th className="p-4 border-b">Contact</th>
-                            <th className="p-4 border-b">Shift</th>
-                            <th className="p-4 border-b">Status</th>
-                            <th className="p-4 border-b text-right">Actions</th>
+                            <th className="p-4 border-b text-white">Staff Name</th>
+                            <th className="p-4 border-b text-white">Contact</th>
+                            <th className="p-4 border-b text-white">Shift</th>
+                            <th className="p-4 border-b text-white">Status</th>
+                            <th className="p-4 border-b text-right text-white">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                         {loading ? (
-                            <tr><td colSpan="5" className="p-6 text-center text-slate-500">Loading staff...</td></tr>
+                            <tr><td colSpan="5" className="p-6 text-center text-slate-500 text-white">Loading staff...</td></tr>
                         ) : filteredStaff.length === 0 ? (
-                            <tr><td colSpan="5" className="p-6 text-center text-slate-500">No staff found.</td></tr>
+                            <tr><td colSpan="5" className="p-6 text-center text-slate-500 text-white">No staff found.</td></tr>
                         ) : (
                             filteredStaff.map(staff => (
-                                <tr key={staff.id} className="hover:bg-slate-50 transition-colors">
+                                <tr key={staff.id} className="hover:bg-black-50 transition-colors">
                                     <td className="p-4">
                                         <div className="font-bold text-slate-800 flex items-center gap-2">
-                                            <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center font-bold">
+                                            <div className="w-8 h-8 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center font-bold ">
                                                 {staff.name.charAt(0)}
                                             </div>
-                                            {staff.name}
+                                            <div className='text-white'>{staff.name}</div>
                                         </div>
-                                        <div className="text-xs text-slate-400 pl-10">{staff.email}</div>
+                                        <div className="text-xs text-slate-400 pl-10 text-white">{staff.email}</div>
                                     </td>
-                                    <td className="p-4 text-sm text-slate-600">
-                                        <div className="flex items-center gap-2 mb-1"><Phone size={14} /> {staff.phoneNumber}</div>
-                                        <div className="flex items-center gap-2"><MapPin size={14} /> {staff.address}</div>
+                                    <td className="p-4 text-sm text-slate-600 text-white">
+                                        <div className="flex items-center gap-2 mb-1 text-white"><Phone size={14} /> {staff.phoneNumber}</div>
+                                        <div className="flex items-center gap-2 text-white"><MapPin size={14} /> {staff.address}</div>
                                     </td>
                                     <td className="p-4 text-slate-600">
                                         <div className="flex items-center gap-2">
-                                            <Clock size={16} className="text-slate-400" />
-                                            {staff.shift}
+                                            <Clock size={16} className="text-slate-400 text-white" />
+                                            <div className='text-white'>{staff.shift}</div>
                                         </div>
                                     </td>
                                     <td className="p-4">
@@ -216,11 +216,13 @@ const StaffManagement = () => {
                                         </button>
                                     </td>
                                     <td className="p-4 text-right space-x-2">
-                                        <button onClick={() => openEditModal(staff)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
-                                            <Edit2 size={18} />
+                                        <button onClick={() => openEditModal(staff)} className="p-2 text-blue-600  rounded-lg">
+                                            <Edit2 size={18} 
+                                            className="text-blue-400 transition-transform duration-200 hover:scale-150"/>
                                         </button>
-                                        <button onClick={() => handleDelete(staff.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
-                                            <Trash2 size={18} />
+                                        <button onClick={() => handleDelete(staff.id)} className="p-2 text-red-600  rounded-lg">
+                                            <Trash2 size={18} 
+                                            className="text-red-400 transition-transform duration-200 hover:scale-150"/>
                                         </button>
                                     </td>
                                 </tr>
@@ -233,9 +235,9 @@ const StaffManagement = () => {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-                        <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white">
-                            <h2 className="text-xl font-bold text-slate-800">{isEditing ? 'Edit Staff' : 'Register New Staff'}</h2>
+                    <div className="bg-black rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-black">
+                            <h2 className="text-xl font-bold text-slate-800 text-white">{isEditing ? 'Edit Staff' : 'Register New Staff'}</h2>
                             <button onClick={() => setShowModal(false)} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
                                 <X size={20} className="text-slate-500" />
                             </button>
@@ -243,7 +245,7 @@ const StaffManagement = () => {
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1 text-white">Full Name</label>
                                     <div className="relative">
                                         <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                         <input
@@ -258,7 +260,7 @@ const StaffManagement = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Email (Login ID)</label>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1 text-white">Email (Login ID)</label>
                                     <div className="relative">
                                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                         <input
@@ -273,7 +275,7 @@ const StaffManagement = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1 text-white">Phone Number</label>
                                     <div className="relative">
                                         <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                         <input
@@ -288,7 +290,7 @@ const StaffManagement = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Shift</label>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1 text-white">Shift</label>
                                     <div className="relative">
                                         <Clock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                                         <select
@@ -308,7 +310,7 @@ const StaffManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
+                                <label className="block text-sm font-medium text-slate-700 mb-1 text-white">Address</label>
                                 <div className="relative">
                                     <MapPin className="absolute left-3 top-3 text-slate-400" size={18} />
                                     <textarea
@@ -325,7 +327,7 @@ const StaffManagement = () => {
 
                             {!isEditing && (
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                                    <label className="block text-sm font-medium text-slate-700 mb-1 text-white">Password</label>
                                     <input
                                         type="password"
                                         name="password"
@@ -342,13 +344,13 @@ const StaffManagement = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="w-full py-2 border border-slate-300 rounded-lg text-slate-600 font-bold hover:bg-slate-50 transition-colors"
+                                    className="w-full py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors cursor-pointer"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="w-full py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors"
+                                    className="w-full py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors cursor-pointer"
                                 >
                                     {isEditing ? 'Update Staff' : 'Register Staff'}
                                 </button>

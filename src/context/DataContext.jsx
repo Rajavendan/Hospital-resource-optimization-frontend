@@ -205,7 +205,7 @@ export const DataProvider = ({ children }) => {
             appointments, addAppointment, cancelAppointment, refreshAppointments,
             beds, updateBedStatus, toggleBedStatus,
             doctors, setDoctors, equipment, allocateResources,
-            loading
+            loading, setPatients
         }}>
             {children}
         </DataContext.Provider>

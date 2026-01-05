@@ -49,12 +49,13 @@ const TestHandlerDashboard = () => {
     return (
         <div className="p-6 max-w-7xl mx-auto">
             <h1 className="text-2xl font-bold mb-6 flex items-center gap-2 text-slate-800">
-                <Clipboard className="text-blue-600" /> Lab Technician Dashboard
+                <Clipboard className="text-blue-600" /> 
+                <h1 className='text-white'>Lab Technician Dashboard</h1>
             </h1>
 
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                    <h2 className="font-semibold text-slate-700">Pending Lab Tests (PAID)</h2>
+            <div className="bg-black rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div className="p-4 border-b border-slate-100 bg-black flex justify-between items-center">
+                    <h2 className="font-semibold text-white">Pending Lab Tests (PAID)</h2>
                     <span className="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded-full font-bold">
                         {tasks.length} To Do
                     </span>
@@ -67,17 +68,17 @@ const TestHandlerDashboard = () => {
                 ) : (
                     <div className="divide-y divide-slate-100">
                         {tasks.map(task => (
-                            <div key={task.id} className="p-4 hover:bg-slate-50 transition-colors flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div key={task.id} className="p-4  transition-colors flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2">
-                                        <span className="font-bold text-slate-800 text-lg">{task.test?.name}</span>
+                                        <span className="font-bold text-white text-lg">{task.test?.name}</span>
                                         <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">PAID</span>
                                     </div>
-                                    <div className="text-sm text-slate-600 flex items-center gap-4">
-                                        <span className="flex items-center gap-1"><User size={14} /> {task.patient?.name} (ID: {task.patient?.id})</span>
+                                    <div className="text-sm text-white flex items-center gap-4">
+                                        <span className="flex items-center gap-1 "><User size={14} /> {task.patient?.name} (ID: {task.patient?.id})</span>
                                         <span className="flex items-center gap-1"><User size={14} /> Dr. {task.doctor?.name}</span>
                                     </div>
-                                    <div className="text-xs text-slate-400">Assigned: {new Date(task.assignedDate).toLocaleString()}</div>
+                                    <div className="text-xs text-white">Assigned: {new Date(task.assignedDate).toLocaleString()}</div>
                                 </div>
 
                                 <div className="flex items-center gap-3">

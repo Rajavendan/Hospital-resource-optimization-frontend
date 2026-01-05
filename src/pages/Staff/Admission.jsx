@@ -5,9 +5,11 @@ import { Plus, Search, Bed, Trash2, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Admission = () => {
-    // ... (state)
+    const { removePatient, patients, loading, setPatients } = useData();
 
-    // ... (effects)
+    const [formData, setFormData] = useState({ name: '', age: '', gender: 'Male', contact: '', severity: 1, diagnosis: '', ward: 'GENERAL' });
+    const [showForm, setShowForm] = useState(false);
+    const [successData, setSuccessData] = useState(null);
 
     const handleAdmission = async (e) => {
         e.preventDefault();
@@ -16,7 +18,12 @@ const Admission = () => {
             setSuccessData(response.data); // Contains { message, patient, bed }
             setShowForm(false);
             setFormData({ name: '', age: '', gender: 'Male', contact: '', severity: 1, diagnosis: '', ward: 'GENERAL' });
-            fetchPatients();
+
+            // Update context state with new patient
+            if (response.data && response.data.patient) {
+                setPatients(prev => [...prev, response.data.patient]);
+            }
+
             toast.success("Patient admitted successfully");
         } catch (error) {
             console.error("Admission failed", error);
@@ -24,12 +31,11 @@ const Admission = () => {
         }
     };
 
-    const { removePatient } = useData(); // Get from context
 
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this admission record?")) {
             await removePatient(id);
-            fetchPatients(); // Refresh local list if needed, though context handles state too.
+            // Context removePatient already updates the state
         }
     };
 

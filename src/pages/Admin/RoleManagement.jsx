@@ -103,7 +103,8 @@ const RoleManagement = () => {
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                        <Users className="text-blue-600" /> Specialized Role Management
+                        <Users className="text-blue-600" /> 
+                        <h1 className='text-white'>Specialized Role Management</h1>
                     </h1>
                     <p className="text-slate-500 text-sm mt-1">Manage Billing Staff and Lab Technicians</p>
                 </div>
@@ -116,7 +117,7 @@ const RoleManagement = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex gap-4">
+            <div className="bg-black p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex gap-4">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     <input
@@ -143,8 +144,8 @@ const RoleManagement = () => {
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredUsers.map(user => (
-                    <div key={user.id} className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow relative overflow-hidden">
-                        <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-bold rounded-bl-xl ${user.role === 'BILLING' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700'
+                    <div key={user.id} className="bg-black p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow relative overflow-hidden">
+                        <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-bold rounded-bl-xl  ${user.role === 'BILLING' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700'
                             }`}>
                             {user.role}
                         </div>
@@ -154,8 +155,8 @@ const RoleManagement = () => {
                                 {user.name.charAt(0)}
                             </div>
                             <div>
-                                <h3 className="font-bold text-slate-800">{user.name}</h3>
-                                <p className="text-xs text-slate-500">{user.username}</p>
+                                <h3 className="font-bold text-white">{user.name}</h3>
+                                <p className="text-xs text-white">{user.username}</p>
                             </div>
                         </div>
 
@@ -185,14 +186,14 @@ const RoleManagement = () => {
             {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-                        <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                            <h2 className="font-bold text-slate-800">{editId ? 'Edit User' : 'Add New User'}</h2>
+                    <div className="bg-black rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+                        <div className="p-4 border-b border-slate-100 bg-black flex justify-between items-center">
+                            <h2 className="font-bold text-white">{editId ? 'Edit User' : 'Add New User'}</h2>
                             <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">×</button>
                         </div>
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                                <label className="block text-sm font-medium text-white mb-1">Full Name</label>
                                 <input
                                     name="name"
                                     required
@@ -202,7 +203,7 @@ const RoleManagement = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Email / Username</label>
+                                <label className="block text-sm font-medium text-white mb-1">Email / Username</label>
                                 <input
                                     name="username"
                                     required
@@ -213,7 +214,7 @@ const RoleManagement = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Role</label>
+                                <label className="block text-sm font-medium text-white mb-1">Role</label>
                                 <select
                                     name="role"
                                     value={formData.role}
@@ -224,7 +225,7 @@ const RoleManagement = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                <label className="block text-sm font-medium text-white mb-1">
                                     {editId ? 'New Password (Optional)' : 'Password'}
                                 </label>
                                 <input

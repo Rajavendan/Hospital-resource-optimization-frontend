@@ -4,7 +4,11 @@ import { BedDouble, User, Plus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const BedManagement = () => {
-    // ... (state)
+    const [beds, setBeds] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [filter, setFilter] = useState('All');
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [newBedData, setNewBedData] = useState({ ward: 'ICU', bedNumber: '' });
 
     useEffect(() => {
         fetchBeds();
@@ -70,30 +74,36 @@ const BedManagement = () => {
 
             {/* Stats Dashboard */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-zinc-900 p-6 rounded-xl shadow-sm border border-zinc-800">
-                    <p className="text-slate-400">Total Capacity</p>
-                    <h3 className="text-3xl font-bold text-slate-200">{stats.total} Beds</h3>
+                <div className="bg-gradient-to-br from-blue-600/20 to-cyan-600/20 p-6 rounded-xl border border-blue-500/30 backdrop-blur-md relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity blur-xl"></div>
+                    <p className="text-blue-300 font-medium z-10 relative">Total Capacity</p>
+                    <h3 className="text-4xl font-bold text-white mt-2 z-10 relative drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]">{stats.total} Beds</h3>
                 </div>
-                <div className="bg-green-900/20 p-6 rounded-xl border border-green-800/40">
-                    <p className="text-green-500">Available</p>
-                    <h3 className="text-3xl font-bold text-green-400">{stats.available} Beds</h3>
+                <div className="bg-gradient-to-br from-emerald-600/20 to-teal-600/20 p-6 rounded-xl border border-emerald-500/30 backdrop-blur-md relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity blur-xl"></div>
+                    <p className="text-emerald-300 font-medium z-10 relative">Available</p>
+                    <h3 className="text-4xl font-bold text-white mt-2 z-10 relative drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]">{stats.available} Beds</h3>
                 </div>
-                <div className="bg-red-900/20 p-6 rounded-xl border border-red-800/40">
-                    <p className="text-red-500">Occupied / Unavail</p>
-                    <h3 className="text-3xl font-bold text-red-400">{stats.occupied + stats.unavailable} Beds</h3>
+                <div className="bg-gradient-to-br from-rose-600/20 to-red-600/20 p-6 rounded-xl border border-rose-500/30 backdrop-blur-md relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity blur-xl"></div>
+                    <p className="text-rose-300 font-medium z-10 relative">Occupied / Unavail</p>
+                    <h3 className="text-4xl font-bold text-white mt-2 z-10 relative drop-shadow-[0_0_10px_rgba(244,63,94,0.5)]">{stats.occupied + stats.unavailable} Beds</h3>
                 </div>
             </div>
 
             {/* Filter */}
-            <div className="flex items-center gap-4 mb-6 text-sm border-b border-zinc-800 pb-1">
+            <div className="flex items-center gap-6 mb-8 border-b border-white/10 pb-1">
                 {wards.map(ward => (
                     <button
                         key={ward}
                         onClick={() => setFilter(ward)}
-                        className={`px-4 py-2 font-medium transition-colors border-b-2 ${filter === ward ? 'border-violet-600 text-violet-500' : 'border-transparent text-slate-500 hover:text-slate-300'
+                        className={`px-4 py-3 font-medium text-sm transition-all relative ${filter === ward ? 'text-violet-400' : 'text-slate-500 hover:text-slate-300'
                             }`}
                     >
                         {ward === 'GENERAL' ? 'General' : ward === 'EMERGENCY' ? 'Emergency' : ward} Only
+                        {filter === ward && (
+                            <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-violet-500 to-fuchsia-500 shadow-[0_0_10px_rgba(139,92,246,0.5)]"></span>
+                        )}
                     </button>
                 ))}
             </div>
@@ -105,30 +115,37 @@ const BedManagement = () => {
                         onClick={() => {
                             // Read-only
                         }}
-                        className={`p-4 rounded-xl border-2 flex flex-col justify-between h-40 transition-all cursor-default ${bed.status === 'AVAILABLE' ? 'bg-zinc-900 border-zinc-800' :
-                            bed.status === 'OCCUPIED' ? 'bg-red-900/10 border-red-900/50' :
-                                'bg-zinc-800 border-zinc-700 opacity-75'
+                        className={`p-5 rounded-xl border flex flex-col justify-between h-44 transition-all duration-300 relative overflow-hidden group ${bed.status === 'AVAILABLE' ? 'bg-[#0f1014] border-white/5 hover:border-emerald-500/30' :
+                            bed.status === 'OCCUPIED' ? 'bg-[#0f1014] border-white/5 hover:border-rose-500/30' :
+                                'bg-[#0f1014]/50 border-white/5 opacity-60'
                             }`}>
-                        <div className="flex justify-between items-start">
+
+                        {/* Status Glow for Card */}
+                        <div className={`absolute top-0 left-0 w-1 h-full ${bed.status === 'AVAILABLE' ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]' :
+                            bed.status === 'OCCUPIED' ? 'bg-rose-500 shadow-[0_0_15px_rgba(244,63,94,0.4)]' :
+                                'bg-slate-700'
+                            }`}></div>
+
+                        <div className="flex justify-between items-start pl-3">
                             <div>
-                                <h3 className="font-bold text-slate-200">{bed.bedNumber}</h3>
-                                <p className="text-xs text-slate-500">{bed.ward} Ward</p>
+                                <h3 className="text-xl font-bold text-slate-200 tracking-tight">{bed.bedNumber}</h3>
+                                <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mt-1">{bed.ward} Ward</p>
                             </div>
-                            <BedDouble size={20} className={bed.status === 'AVAILABLE' ? 'text-green-500' : 'text-slate-500'} />
+                            <BedDouble size={22} className={`${bed.status === 'AVAILABLE' ? 'text-emerald-500 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'text-slate-600'}`} />
                         </div>
 
-                        <div>
+                        <div className="pl-3">
                             {bed.status === 'OCCUPIED' ? (
-                                <div className="flex items-center gap-2 text-sm text-red-400 bg-zinc-900 p-2 rounded-lg border border-red-900/50">
+                                <div className="flex items-center gap-2 text-sm text-rose-300 bg-rose-500/10 p-2 rounded-lg border border-rose-500/20">
                                     <User size={14} />
-                                    <span>{bed.patient ? bed.patient.name : 'Occupied'}</span>
+                                    <span className="truncate">{bed.patient ? bed.patient.name : 'Occupied'}</span>
                                 </div>
                             ) : bed.status === 'UNAVAILABLE' ? (
-                                <div className="text-sm text-slate-400 font-medium bg-zinc-800 p-2 rounded-lg text-center">
+                                <div className="text-sm text-slate-500 font-medium bg-slate-800/20 p-2 rounded-lg text-center border border-white/5">
                                     Unavailable
                                 </div>
                             ) : (
-                                <div className="text-sm text-green-400 font-medium bg-green-900/20 p-2 rounded-lg text-center">
+                                <div className="text-sm text-emerald-400 font-bold bg-emerald-500/10 p-2 rounded-lg text-center border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
                                     Available
                                 </div>
                             )}

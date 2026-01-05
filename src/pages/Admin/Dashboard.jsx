@@ -56,8 +56,8 @@ const AdminDashboard = () => {
                     <ShieldCheck size={32} />
                 </div>
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-800">Admin Dashboard</h1>
-                    <p className="text-slate-500">Manage hospital resources and personnel.</p>
+                    <h1 className="text-3xl font-bold text-slate-800 text-white">Admin Dashboard</h1>
+                    <p className="text-slate-500 text-white ">Manage hospital resources.</p>
                 </div>
             </div>
 
@@ -66,7 +66,7 @@ const AdminDashboard = () => {
                     <div
                         key={index}
                         onClick={() => navigate(module.path)}
-                        className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 cursor-pointer hover:shadow-md transition-all group"
+                        className=" rounded-xl shadow-sm border border-slate-200 p-6 cursor-pointer hover:shadow-md transition-all group"
                     >
                         <div className="flex items-start justify-between mb-4">
                             <div className={`p-3 rounded-lg ${module.bg} ${module.color}`}>
@@ -76,7 +76,7 @@ const AdminDashboard = () => {
                                 <ArrowRight size={20} />
                             </div>
                         </div>
-                        <h3 className="text-xl font-bold text-slate-800 mb-2">{module.title}</h3>
+                        <h3 className="text-xl font-bold text-slate-800 mb-2 text-white">{module.title}</h3>
                         <p className="text-slate-500">{module.description}</p>
                     </div>
                 ))}

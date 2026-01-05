@@ -18,42 +18,37 @@ api.interceptors.request.use(
             if (token) {
                 config.headers = config.headers || {};
                 config.headers.Authorization = `Bearer ${token}`;
+                console.log('Token attached to request:', config.url);
+            } else {
+                console.warn('No token found for request:', config.url);
             }
         }
         return config;
     },
     (error) => Promise.reject(error)
 );
- 
+
 
 // Response Interceptor: Handle 401
 api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response && error.response.status === 401) {
-            // Check if this request should skip auth redirect (for graceful error handling)
-            const skipAuthRedirect = error.config?.skipAuthRedirect;
-
-            // Check if this is a data fetching endpoint (not auth endpoint)
-            const requestUrl = error.config?.url || '';
-            const isDataEndpoint = requestUrl.includes('/appointments') ||
-                requestUrl.includes('/doctors') ||
-                requestUrl.includes('/patients') ||
-                requestUrl.includes('/resources/');
-               
-
-            // Only redirect if not already on login page, not skipping redirect, and not a data endpoint
             const isLoginPage = window.location.pathname === '/login' || window.location.pathname === '/signup';
 
-            //
-            if (isDataEndpoint || skipAuthRedirect) {
-                console.warn(`401 Unauthorized for data endpoint: ${requestUrl}. Error handled gracefully.`);
-            } else if (!isLoginPage) {
-                // Only logout and redirect for non-data endpoints and not on login page
-                console.error('401 Unauthorized - logging out usedr');
-                localStorage.removeItem('jwtToken');
-                localStorage.removeItem('user');
-                window.location.href = '/login';
+            if (!isLoginPage) {
+                // If we get a 401, the token is likely invalid or expired.
+                // We should log the user out to prevent them from being stuck in a broken state.
+                // We can optionally check for a specific "skipAuthRedirect" config if valid use cases exist.
+                if (!error.config?.skipAuthRedirect) {
+                    console.error('401 Unauthorized - Request URL:', error.config?.url);
+                    console.error('401 Unauthorized - Response:', error.response?.data);
+                    console.error('401 Unauthorized - Token present:', !!localStorage.getItem('jwtToken'));
+                    console.warn('401 Unauthorized - Token invalid or expired. Logging out.');
+                    localStorage.removeItem('jwtToken');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                }
             }
         }
         return Promise.reject(error);

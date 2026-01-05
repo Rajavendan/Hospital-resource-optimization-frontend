@@ -75,7 +75,7 @@ const EquipmentManagement = () => {
         <div className="p-6">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Equipment Management</h1>
+                    <h1 className="text-2xl font-bold text-slate-800 text-white">Equipment Management</h1>
                     <p className="text-slate-500">Manage hospital assets and inventory</p>
                 </div>
                 <button
@@ -88,27 +88,27 @@ const EquipmentManagement = () => {
 
             {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4">{error}</div>}
 
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-black rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <table className="w-full text-left">
-                    <thead className="bg-slate-50 border-b border-slate-200">
+                    <thead className="bg-black border-b border-slate-200">
                         <tr>
-                            <th className="p-4 font-semibold text-slate-700">Name</th>
-                            <th className="p-4 font-semibold text-slate-700">Type</th>
-                            <th className="p-4 font-semibold text-slate-700">Status</th>
-                            <th className="p-4 font-semibold text-slate-700">Handler</th>
-                            <th className="p-4 font-semibold text-slate-700">Actions</th>
+                            <th className="p-4 font-semibold  text-white">Name</th>
+                            <th className="p-4 font-semibold  text-white">Type</th>
+                            <th className="p-4 font-semibold  text-white">Status</th>
+                            <th className="p-4 font-semibold  text-white">Handler</th>
+                            <th className="p-4 font-semibold  text-white">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                         {loading ? (
-                            <tr><td colSpan="5" className="p-8 text-center text-slate-500">Loading equipment...</td></tr>
+                            <tr><td colSpan="5" className="p-8 text-center text-slate-500  text-white">Loading equipment...</td></tr>
                         ) : equipmentList.length === 0 ? (
                             <tr><td colSpan="5" className="p-8 text-center text-slate-500">No equipment found.</td></tr>
                         ) : (
                             equipmentList.map((eq) => (
-                                <tr key={eq.id} className="hover:bg-slate-50 transition-colors">
-                                    <td className="p-4 font-medium text-slate-800">{eq.name}</td>
-                                    <td className="p-4 text-slate-600">{eq.type}</td>
+                                <tr key={eq.id} className="hover:bg-purple transition-colors">
+                                    <td className="p-4 font-medium text-slate-800  text-white">{eq.name}</td>
+                                    <td className="p-4 text-slate-600  text-white">{eq.type}</td>
                                     <td className="p-4">
                                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${eq.status === 'AVAILABLE' ? 'bg-green-100 text-green-700' :
                                                 eq.status === 'IN_USE' ? 'bg-blue-100 text-blue-700' :
@@ -117,7 +117,7 @@ const EquipmentManagement = () => {
                                             {eq.status}
                                         </span>
                                     </td>
-                                    <td className="p-4 text-slate-600">{eq.handlerName || 'Unassigned'}</td>
+                                    <td className="p-4 text-slate-600  text-white">{eq.handlerName || 'Unassigned'}</td>
                                     <td className="p-4 flex gap-2">
                                         <button onClick={() => handleEdit(eq)} className="text-blue-600 hover:bg-blue-50 p-2 rounded-lg" title="Edit">
                                             <Edit2 size={18} />
@@ -184,7 +184,7 @@ const EquipmentManagement = () => {
                                     Cancel
                                 </button>
                                 <button
-                                    type="submit"
+                                    type="submit"    
                                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                                 >
                                     {editId ? 'Update' : 'Create'}
