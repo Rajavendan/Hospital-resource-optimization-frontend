@@ -8,13 +8,8 @@ const MyAppointments = () => {
     const { appointments, cancelAppointment, doctors, refreshAppointments } = useData();
     const [refreshing, setRefreshing] = useState(false);
 
-    // Filter appointments for the current user - backend should already filter by patient
-    // But we filter again on client side as a safety measure
-    const myAppointments = appointments.filter(apt => {
-        if (!user?.id) return false;
-        // Backend should return only this patient's appointments, but filter anyway
-        return (apt.patient?.id === user.id) || (apt.patientId === user.id) || (apt.patient?.user?.id === user.id);
-    });
+    // Backend already filters by patient context, so we trust the response.
+    const myAppointments = appointments;
 
     const getDoctorName = (id) => {
         // Handle both object and ID references if backend returns mixed or populated
@@ -43,7 +38,7 @@ const MyAppointments = () => {
     return (
         <div className="max-w-4xl mx-auto">
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-slate-800">My Appointments</h1>
+                <h1 className="text-2xl font-bold text-white">My Appointments</h1>
                 <button
                     onClick={handleRefresh}
                     disabled={refreshing}
@@ -56,19 +51,19 @@ const MyAppointments = () => {
 
             <div className="grid gap-4">
                 {myAppointments.map(apt => (
-                    <div key={apt.id} className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div key={apt.id} className="bg-black p-6 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
                         <div className="flex items-start gap-4">
                             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
-                                {new Date(apt.date).getDate()}
+                                {new Date(apt.appointmentDate).getDate()}
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-slate-800">{apt.doctor?.name || getDoctorName(apt.doctor?.id || apt.doctorId)}</h3>
-                                <p className="text-slate-500 text-sm">{apt.type}</p>
+                                <h3 className="text-lg font-bold text-white">{apt.doctor?.name || getDoctorName(apt.doctor?.id || apt.doctorId)}</h3>
+                                <p className="text-white text-sm">{apt.type}</p>
                                 <div className="flex items-center gap-4 mt-2 text-sm text-slate-600">
-                                    <span className="flex items-center gap-1">
-                                        <Clock size={14} /> {apt.time}
+                                    <span className="flex items-center gap-1 text-white">
+                                        <Clock size={14} /> {apt.appointmentTime}
                                     </span>
-                                    <span className="flex items-center gap-1">
+                                    <span className="flex items-center gap-1 text-white">
                                         <MapPin size={14} /> General Ward
                                     </span>
                                 </div>

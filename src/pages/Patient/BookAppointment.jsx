@@ -36,10 +36,18 @@ const BookAppointment = () => {
 
     useEffect(() => {
         if (selectedDoctor && selectedDate) {
-            // Mocking available slots for simplicity, ideally fetch from backend
-            const slots = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
-            // Filter out booked slots if backend provided endpoint
-            setAvailableSlots(slots);
+            setLoading(true);
+            api.get(`/appointments/slots?doctorId=${selectedDoctor}&date=${selectedDate}`)
+                .then(res => {
+                    setAvailableSlots(res.data);
+                    setLoading(false);
+                })
+                .catch(err => {
+                    console.error("Failed to load slots", err);
+                    setAvailableSlots([]);
+                    setLoading(false);
+                    toast.error("Failed to load available slots");
+                });
         } else {
             setAvailableSlots([]);
         }
@@ -54,10 +62,9 @@ const BookAppointment = () => {
         }
 
         const apptData = {
-            patient: { id: user.id },
-            doctor: { id: parseInt(selectedDoctor) },
-            date: selectedDate,
-            time: selectedTime,
+            doctorId: parseInt(selectedDoctor),
+            appointmentDate: selectedDate,
+            appointmentTime: selectedTime.substring(0, 5),
             status: 'SCHEDULED'
         };
 
@@ -77,7 +84,20 @@ const BookAppointment = () => {
             });
         } catch (error) {
             console.error("Booking failed:", error);
-            const msg = error.response?.data?.message || "Failed to book appointment";
+            let msg = "Failed to book appointment";
+            if (error.response) {
+                if (error.response.status === 409) {
+                    msg = error.response.data.message || "This slot is no longer available.";
+                    // Refresh slots on conflict
+                    const currentDoc = selectedDoctor;
+                    const currentDate = selectedDate;
+                    // Trigger effect by setting date/doc slightly off or just re-fetch manually if needed
+                    // For now, let user manually re-select or we could force refresh
+                    setAvailableSlots(prev => prev.filter(s => s !== selectedTime));
+                } else {
+                    msg = error.response.data.message || "An error occurred.";
+                }
+            }
             toast.error(msg);
         }
     };
@@ -93,27 +113,27 @@ const BookAppointment = () => {
 
     if (bookingStatus) {
         return (
-            <div className="max-w-xl mx-auto mt-10 p-8 bg-white rounded-2xl shadow-sm border border-slate-100 text-center">
+            <div className="max-w-xl mx-auto mt-10 p-8 bg-black rounded-2xl shadow-sm border border-slate-100 text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600">
                     <CheckCircle size={32} />
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-2 ">Booking Confirmed!</h2>
-                <div className="bg-slate-50 rounded-xl p-4 text-left space-y-3 mt-6">
+                <div className="bg-purple rounded-xl p-4 text-left space-y-3 mt-6">
                     <div className="flex justify-between">
-                        <span className="text-slate-500">Doctor</span>
-                        <span className="font-medium text-slate-800">{bookingStatus.doctor}</span>
+                        <span className="text-white">Doctor</span>
+                        <span className="font-medium text-white">{bookingStatus.doctor}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="text-slate-500">Department</span>
-                        <span className="font-medium text-slate-800">{bookingStatus.dept}</span>
+                        <span className="text-white">Department</span>
+                        <span className="font-medium text-white">{bookingStatus.dept}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="text-slate-500">Date</span>
-                        <span className="font-medium text-slate-800">{bookingStatus.date}</span>
+                        <span className="text-white">Date</span>
+                        <span className="font-medium text-white">{bookingStatus.date}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="text-slate-500">Time</span>
-                        <span className="font-medium text-slate-800">{bookingStatus.time}</span>
+                        <span className="text-white">Time</span>
+                        <span className="font-medium text-white">{bookingStatus.time}</span>
                     </div>
                 </div>
                 <button
