@@ -8,7 +8,7 @@ const OpdEntry = () => {
         age: '',
         gender: 'Male',
         contact: '',
-        diagnosis: '', // symptoms
+        diagnosis: '',
         severity: 1
     });
     const [loading, setLoading] = useState(false);
@@ -38,7 +38,7 @@ const OpdEntry = () => {
                 diagnosis: '',
                 severity: 1
             });
-        } catch (error) {
+        } catch (error) {   
             console.error(error);
             setMessage({ type: 'error', text: 'Failed to register patient. Please check system status.' });
         } finally {

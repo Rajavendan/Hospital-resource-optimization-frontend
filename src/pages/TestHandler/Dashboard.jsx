@@ -48,10 +48,10 @@ const TestHandlerDashboard = () => {
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
-            <h1 className="text-2xl font-bold mb-6 flex items-center gap-2 text-slate-800">
-                <Clipboard className="text-blue-600" /> 
+            <div className="text-2xl font-bold mb-6 flex items-center gap-2 text-slate-800">
+                <Clipboard className="text-blue-600" />
                 <h1 className='text-white'>Lab Technician Dashboard</h1>
-            </h1>
+            </div>
 
             <div className="bg-black rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="p-4 border-b border-slate-100 bg-black flex justify-between items-center">
@@ -92,8 +92,8 @@ const TestHandlerDashboard = () => {
                                     <label
                                         htmlFor={`file-${task.id}`}
                                         className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold cursor-pointer transition-colors shadow-sm ${uploading === task.id
-                                                ? 'bg-slate-100 text-slate-400'
-                                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                                            ? 'bg-slate-100 text-slate-400'
+                                            : 'bg-blue-600 text-white hover:bg-blue-700'
                                             }`}
                                     >
                                         {uploading === task.id ? 'Uploading...' : <><Upload size={18} /> Upload Report</>}

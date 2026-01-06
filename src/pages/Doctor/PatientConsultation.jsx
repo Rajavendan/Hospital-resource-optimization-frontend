@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../../api/axios';
+import api from '../../api/axios';
 import toast from 'react-hot-toast';
 import {
     Beaker,
@@ -44,9 +44,24 @@ const PatientConsultation = () => {
     const fetchPatientData = async () => {
         try {
             setLoading(true);
-            // 1. Fetch Patient Info (Verifying assignment)
-            const patientRes = await axios.get('/doctors/my-patients');
-            const foundPatient = patientRes.data.find(p => p.id === parseInt(patientId));
+            let foundPatient = null;
+
+            // 1. Try finding in "My Patients" list first (preserves existing logic)
+            try {
+                const patientRes = await api.get('/doctors/my-patients');
+                foundPatient = patientRes.data.find(p => p.id === parseInt(patientId));
+            } catch (ignore) { }
+
+            // 2. If not found, fetch directly by ID (Fix for Schedule flow)
+            if (!foundPatient) {
+                try {
+                    // Use standard /api/patients/{id} endpoint which requires authenticated role but exists
+                    const directRes = await api.get(`/patients/${patientId}`);
+                    foundPatient = directRes.data;
+                } catch (e) {
+                    console.error("Failed to fetch patient directly", e);
+                }
+            }
 
             if (foundPatient) {
                 setPatient(foundPatient);
@@ -55,7 +70,7 @@ const PatientConsultation = () => {
                 // 3. Fetch Available Tests
                 fetchAvailableTests();
             } else {
-                setError('Patient not found or not assigned to you.');
+                setError('Patient not found.');
             }
         } catch (err) {
             console.error(err);
@@ -67,7 +82,7 @@ const PatientConsultation = () => {
 
     const fetchReports = async (id) => {
         try {
-            const res = await axios.get(`/doctors/reports/${id}`);
+            const res = await api.get(`/doctors/reports/${id}`);
             setReports(res.data);
         } catch (err) {
             console.error("Error fetching reports", err);
@@ -76,7 +91,7 @@ const PatientConsultation = () => {
 
     const fetchAvailableTests = async () => {
         try {
-            const res = await axios.get('/doctors/tests');
+            const res = await api.get('/doctors/tests');
             setAvailableTests(res.data);
         } catch (err) {
             console.error("Failed to fetch tests", err);
@@ -87,7 +102,7 @@ const PatientConsultation = () => {
         if (selectedTests.length === 0) return;
         try {
             setAssigning(true);
-            await axios.post(`/doctors/tests/assign/${patient.id}`, { testIds: selectedTests });
+            await api.post(`/doctors/tests/assign/${patient.id}`, { testIds: selectedTests });
             toast.success('Tests assigned successfully to Laboratory Queue.');
             fetchAvailableTests(); // Refresh counts
             setSelectedTests([]);
@@ -111,7 +126,7 @@ const PatientConsultation = () => {
             formData.append('patientId', patient.id);
             formData.append('description', reportDesc);
 
-            await axios.post('/doctors/reports/upload', formData, {
+            await api.post('/doctors/reports/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
@@ -129,7 +144,7 @@ const PatientConsultation = () => {
     const handleCompleteConsultation = async () => {
         if (!window.confirm("Are you sure you want to complete this consultation? The patient will be discharged.")) return;
         try {
-            await axios.put(`/doctors/patients/${patient.id}/complete`);
+            await api.put(`/doctors/patients/${patient.id}/complete`);
             toast.success("Consultation completed");
             navigate('/doctor/patients');
         } catch (err) {
@@ -141,9 +156,9 @@ const PatientConsultation = () => {
         try {
             let res;
             if (report.source === 'LAB') {
-                res = await axios.get(`/reports/download/${report.id}`, { responseType: 'blob' });
+                res = await api.get(`/reports/download/${report.id}`, { responseType: 'blob' });
             } else {
-                res = await axios.get(`/doctors/reports/download/${report.id}`, { responseType: 'blob' });
+                res = await api.get(`/doctors/reports/download/${report.id}`, { responseType: 'blob' });
             }
             const url = window.URL.createObjectURL(new Blob([res.data], { type: report.fileType }));
             window.open(url, '_blank');
@@ -157,9 +172,9 @@ const PatientConsultation = () => {
         try {
             let res;
             if (report.source === 'LAB') {
-                res = await axios.get(`/reports/download/${report.id}`, { responseType: 'blob' });
+                res = await api.get(`/reports/download/${report.id}`, { responseType: 'blob' });
             } else {
-                res = await axios.get(`/doctors/reports/download/${report.id}`, { responseType: 'blob' });
+                res = await api.get(`/doctors/reports/download/${report.id}`, { responseType: 'blob' });
             }
             const url = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');
@@ -179,15 +194,15 @@ const PatientConsultation = () => {
     if (error) return <div className="flex h-screen items-center justify-center text-red-500">{error}</div>;
 
     return (
-        <div className="flex h-screen bg-slate-50">
+        <div className="flex h-screen bg-black">
             {/* Sidebar Placeholder or removed if using main layout */}
             <div className="flex-1 overflow-auto">
                 {/* Header */}
-                <div className="bg-white border-b border-slate-200 px-8 py-6 flex justify-between items-center sticky top-0 z-10">
+                <div className="bg-black border-b border-slate-200 px-8 py-6 flex justify-between items-center sticky top-0 z-10">
                     <div>
                         <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-3">
                             <Beaker className="text-blue-600" />
-                            Patient Consultation
+                            <span className="text-white">Patient Consultation</span>
                         </h1>
                         {patient && (
                             <div className="flex items-center gap-2 text-slate-500 text-sm mt-1">
@@ -217,19 +232,19 @@ const PatientConsultation = () => {
                 <div className="p-8 max-w-7xl mx-auto space-y-6">
                     {/* Patient Card */}
                     {patient && (
-                        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                        <div className="bg-black rounded-xl shadow-sm border border-slate-200 p-6">
                             <div className="flex justify-between items-start mb-6">
                                 <div className="flex gap-4">
                                     <div className="w-16 h-16 bg-blue-100/50 rounded-full flex items-center justify-center text-blue-600 font-bold text-xl">
                                         {patient.name.charAt(0)}
                                     </div>
                                     <div>
-                                        <h2 className="text-xl font-bold text-slate-800">{patient.name}</h2>
-                                        <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-slate-600 mt-2">
-                                            <p>Age: <span className="font-medium text-slate-900">{patient.age}</span></p>
-                                            <p>Gender: <span className="font-medium text-slate-900">{patient.gender}</span></p>
-                                            <p>Blood: <span className="font-medium text-slate-900">{patient.bloodGroup}</span></p>
-                                            <p>Contact: <span className="font-medium text-slate-900">{patient.contact}</span></p>
+                                        <h2 className="text-xl font-bold text-white">{patient.name}</h2>
+                                        <div className="grid grid-cols-2 gap-x-8 gap-y-1 text-sm text-slate-300 mt-2">
+                                            <p>Age: <span className="font-medium text-slate-100">{patient.age}</span></p>
+                                            <p>Gender: <span className="font-medium text-slate-100">{patient.gender}</span></p>
+                                            <p>Blood: <span className="font-medium text-slate-100">{patient.bloodGroup}</span></p>
+                                            <p>Contact: <span className="font-medium text-slate-100">{patient.contact}</span></p>
                                         </div>
                                     </div>
                                 </div>
@@ -240,16 +255,16 @@ const PatientConsultation = () => {
                                         }`}>
                                         Severity: {patient.severity}/5
                                     </span>
-                                    <p className="text-sm text-slate-500 mt-2">Admitted: {patient.admissionDate}</p>
+                                    <p className="text-sm text-slate-200 mt-2">Admitted: {patient.admissionDate}</p>
                                 </div>
                             </div>
 
                             {/* Recent Diagnosis */}
-                            <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
+                            <div className="bg-slate-230 rounded-lg p-4 border border-slate-200">
+                                <label className="block text-xs font-bold text-white uppercase tracking-wide mb-1">
                                     Current Diagnosis
                                 </label>
-                                <p className="text-slate-800 font-medium">{patient.diagnosis || 'No initial diagnosis recorded.'}</p>
+                                <p className="text-white font-medium">{patient.diagnosis || 'No initial diagnosis recorded.'}</p>
                             </div>
                         </div>
                     )}
@@ -263,7 +278,7 @@ const PatientConsultation = () => {
                                 : 'border-transparent text-slate-500 hover:text-slate-700'
                                 }`}
                         >
-                            Diagnostics & Tests
+                            <h1 className='text-white'>Diagnostics & Tests</h1>
                         </button>
                         <button
                             onClick={() => setActiveTab('reports')}
@@ -272,20 +287,20 @@ const PatientConsultation = () => {
                                 : 'border-transparent text-slate-500 hover:text-slate-700'
                                 }`}
                         >
-                            Medical Reports & Results
+                            <h1 className='text-white'>Medical Reports & Results</h1>
                         </button>
                     </div>
 
                     {/* Tab Content */}
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 min-h-[400px]">
+                    <div className="bg-slate-960 rounded-xl shadow-sm border border-slate-200 p-6 min-h-[400px]">
                         {activeTab === 'tests' ? (
                             <div className="max-w-2xl mx-auto py-8">
                                 <div className="text-center mb-6">
                                     <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <Beaker className="text-blue-600" size={32} />
                                     </div>
-                                    <h3 className="text-lg font-bold text-slate-800">Assign Diagnostic Tests</h3>
-                                    <p className="text-slate-500 mt-2">
+                                    <h3 className="text-lg font-bold text-slate-200">Assign Diagnostic Tests</h3>
+                                    <p className="text-slate-200 mt-2">
                                         Select a test from the Master List to assign to the patient.
                                     </p>
                                 </div>
@@ -300,11 +315,11 @@ const PatientConsultation = () => {
 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-2">Select Tests to Assign</label>
+                                        <label className="block text-sm font-medium text-slate-200 mb-2">Select Tests to Assign</label>
                                         <div className="max-h-60 overflow-y-auto border rounded-xl p-2 space-y-2 bg-slate-50">
                                             {availableTests.length === 0 && <p className="text-sm text-slate-400 text-center py-4">No tests available.</p>}
                                             {availableTests.map(test => (
-                                                <div key={test.testId} className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${selectedTests.includes(test.id) ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-200'
+                                                <div key={test.id} className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${selectedTests.includes(test.id) ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-200'
                                                     }`}>
                                                     <label className="flex items-center gap-3 w-full cursor-pointer">
                                                         <input

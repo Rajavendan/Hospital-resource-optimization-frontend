@@ -28,7 +28,6 @@ const Sidebar = () => {
         { name: 'Dashboard', path: '/', icon: LayoutDashboard, roles: ['staff'] },
         { name: 'OPD Entry', path: '/opd-entry', icon: UserPlus, roles: ['staff'] },
         { name: 'My Schedule', path: '/schedule', icon: Calendar, roles: ['doctor'] },
-        { name: 'My Patients', path: '/doctor/patients', icon: Users, roles: ['doctor'] },
         { name: 'Book Appointment', path: '/book-appointment', icon: CalendarPlus, roles: ['patient'] },
         { name: 'My Appointments', path: '/my-appointments', icon: Calendar, roles: ['patient'] },
         { name: 'Admission', path: '/admission', icon: FileText, roles: ['staff'] },
@@ -46,10 +45,11 @@ const Sidebar = () => {
         { name: 'Lab Dashboard', path: '/testhandler', icon: TestTube, roles: ['testhandler'] }
     ];
 
-    const allowedLinks = links.filter(link => link.roles.includes(user.role));
+    const normalizedRole = user.role ? user.role.toLowerCase() : '';
+    const allowedLinks = links.filter(link => link.roles.includes(normalizedRole));
 
     return (
-        <div className="h-screen w-64 bg-zinc-950 text-slate-200 flex flex-col fixed left-0 top-0 border-r border-zinc-900">
+        <div className="h-screen w-64 bg-zinc-950 text-slate-200 flex flex-col fixed left-0 top-0 border-r border-zinc-900 z-50">
             <div className="p-6">
                 <h1 className="text-xl font-bold text-violet-400">Smart Hospital</h1>
                 <p className="text-xs text-slate-500 mt-1">Resource Optimization</p>

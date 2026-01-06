@@ -23,29 +23,7 @@ const Signup = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleGoogleSignup = async () => {
-        try {
-            const { auth, googleProvider } = await import('../firebase');
-            const { signInWithPopup } = await import('firebase/auth');
 
-            const result = await signInWithPopup(auth, googleProvider);
-            const user = result.user;
-
-            const googleData = {
-                name: user.displayName,
-                email: user.email,
-                photoUrl: user.photoURL,
-                googleId: user.uid
-            };
-
-            await api.post('/auth/google', googleData);
-            toast.success('Registration Successful!');
-            navigate('/login');
-        } catch (error) {
-            console.error("Google Signup Error", error);
-            setError("Google Signup Failed: " + error.message);
-        }
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -203,20 +181,7 @@ const Signup = () => {
                             {loading ? 'Creating Account...' : 'Register'}
                         </button>
 
-                        <div className="relative flex py-2 items-center">
-                            <div className="flex-grow border-t border-zinc-800"></div>
-                            <span className="flex-shrink-0 mx-4 text-slate-500 text-sm">Or continue with</span>
-                            <div className="flex-grow border-t border-zinc-800"></div>
-                        </div>
 
-                        <button
-                            type="button"
-                            onClick={handleGoogleSignup}
-                            className="w-full bg-zinc-950 border border-zinc-800 text-slate-300 font-semibold py-3 rounded-xl hover:bg-zinc-900 transition-all flex items-center justify-center gap-2"
-                        >
-                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
-                            Sign up with Google
-                        </button>
                     </form>
 
 

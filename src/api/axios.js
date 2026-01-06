@@ -29,26 +29,39 @@ api.interceptors.request.use(
 );
 
 
-// Response Interceptor: Handle 401
+// Response Interceptor: Handle 401 safely
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response && error.response.status === 401) {
+        if (error.response?.status === 401) {
+            const url = error.config?.url || '';
+            const isAuthEndpoint = url.includes('/auth/');
             const isLoginPage = window.location.pathname === '/login' || window.location.pathname === '/signup';
 
-            if (!isLoginPage) {
-                // If we get a 401, the token is likely invalid or expired.
-                // We should log the user out to prevent them from being stuck in a broken state.
-                // We can optionally check for a specific "skipAuthRedirect" config if valid use cases exist.
+            // Log the failing endpoint to aid debugging
+            console.error('401 from:', url);
+
+            // Only force logout for auth endpoints (e.g., login/refresh). Other 401s
+            // should be handled by the calling code so we do not kick out valid users.
+
+            // STRICTER CHECK: Only logout if we are absolutely sure the token is invalid/expired
+            // Usually this comes from a global 401 on a protected route,
+            // BUT incorrectly hitting a non-existent route might trigger 401 in some configs.
+            // Safe approach: Only auto-logout if the URL is explicitly NOT a known "safe to fail" one
+            // or if the backend sends a specific "Token invalid" payload (if we had that standard).
+
+            // For now, disabling auto-logout for random 401s to prevent this bug.
+            // User will be redirected only if they try to login again or if it's a critical auth flow.
+
+            if (!isLoginPage && (isAuthEndpoint || error.config?.forceLogoutOn401)) {
                 if (!error.config?.skipAuthRedirect) {
-                    console.error('401 Unauthorized - Request URL:', error.config?.url);
-                    console.error('401 Unauthorized - Response:', error.response?.data);
-                    console.error('401 Unauthorized - Token present:', !!localStorage.getItem('jwtToken'));
-                    console.warn('401 Unauthorized - Token invalid or expired. Logging out.');
                     localStorage.removeItem('jwtToken');
                     localStorage.removeItem('user');
                     window.location.href = '/login';
                 }
+            } else {
+                // For normal API calls returning 401 (like accessing wrong resource), rely on UI to show error.
+                // Ideally we'd decrypt token to check expiry, but for now, pass error to component.
             }
         }
         return Promise.reject(error);

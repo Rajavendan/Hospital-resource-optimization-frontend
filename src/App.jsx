@@ -26,7 +26,7 @@ import TestDefinitionAdmin from './pages/Admin/TestDefinition';
 import RoleManagement from './pages/Admin/RoleManagement';
 
 import OpdEntry from './pages/Staff/OpdEntry';
-import DoctorPatients from './pages/Doctor/DoctorPatients';
+
 import PatientConsultation from './pages/Doctor/PatientConsultation';
 import TestAssignment from './components/TestAssignment';
 import BillingDashboard from './pages/Billing/Dashboard';
@@ -80,7 +80,7 @@ function App() {
               {/* Doctor Routes */}
               <Route element={<PrivateRoute allowedRoles={['doctor']} />}>
                 <Route path="/schedule" element={<Schedule />} />
-                <Route path="/doctor/patients" element={<DoctorPatients />} />
+                <Route path="/doctor/patients" element={<Patients />} />
                 <Route path="/doctor/consultation/:patientId" element={<PatientConsultation />} />
               </Route>
 

@@ -35,10 +35,10 @@ const BillingDashboard = () => {
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
-            <h1 className="text-2xl font-bold mb-6 flex items-center gap-2 text-slate-800">
-                <CreditCard className="text-white" /> 
+            <div className="text-2xl font-bold mb-6 flex items-center gap-2 text-slate-800">
+                <CreditCard className="text-white" />
                 <h1 className='text-white'>Billing & Payments</h1>
-            </h1>
+            </div>
 
             <div className="bg-black rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="p-4 border-b border-slate-100 bg-black flex justify-between items-center">

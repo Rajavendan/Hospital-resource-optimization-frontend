@@ -1,21 +1,31 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
-import { Calendar, Clock, User, CheckCircle } from 'lucide-react';
+import { Calendar, Clock, User, CheckCircle, Activity, ArrowRight } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Schedule = () => {
+    const navigate = useNavigate();
     const [appointments, setAppointments] = useState([]);
+    const [opdPatients, setOpdPatients] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchSchedule();
+        fetchData();
     }, []);
 
-    const fetchSchedule = async () => {
+    const fetchData = async () => {
         try {
-            const response = await api.get('/appointments/my-schedule');
-            setAppointments(response.data);
+            setLoading(true);
+            const [aptRes, opdRes] = await Promise.all([
+                api.get('/appointments/my-schedule'),
+                api.get('/doctors/my-patients')
+            ]);
+            setAppointments(aptRes.data);
+            setOpdPatients(opdRes.data);
         } catch (error) {
-            console.error("Failed to load schedule", error);
+            console.error("Failed to load schedule/patients", error);
+            toast.error("Failed to load data");
         } finally {
             setLoading(false);
         }
@@ -23,58 +33,119 @@ const Schedule = () => {
 
     if (loading) return <div className="p-8 text-center text-slate-500">Loading schedule...</div>;
 
+    // Merge and sort lists could be done here if we wanted a strictly time-based single list.
+    // For now, let's keep them in separate sections or a unified list with badges.
+    // Unified list approach as requested:
+
+    const unifiedList = [
+        ...appointments.map(a => ({ ...a, type: 'APPOINTMENT', sortTime: a.appointmentTime })),
+        ...opdPatients.map(p => ({
+            id: p.id, // Ensure ID mapping is correct
+            patientId: p.id,
+            patientName: p.name,
+            appointmentDate: new Date().toISOString().split('T')[0], // Assume today for OPD
+            appointmentTime: '00:00:00', // Default priority
+            status: 'OPD / WALK-IN',
+            type: 'OPD',
+            sortTime: '00:00:00'
+        }))
+    ].sort((a, b) => {
+        // Sort by time, Appointments usually have specific times, OPD can be top or bottom
+        return a.sortTime.localeCompare(b.sortTime);
+    });
+
     return (
-        <div className="max-w-6xl mx-auto">
+        <div className="h-[calc(100vh-6rem)] flex flex-col">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">My Schedule</h1>
-                    <p className="text-slate-500">Upcoming appointments and patient visits</p>
+                    <h1 className="text-3xl font-bold text-slate-100 tracking-tight">My Schedule & Patients</h1>
+                    <p className="text-slate-400 mt-1">Unified view of Appointments and OPD assignments</p>
                 </div>
-                <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg font-medium flex items-center gap-2">
+                <div className="bg-white/5 border border-white/10 text-blue-400 px-4 py-2 rounded-xl font-medium flex items-center gap-2 backdrop-blur-md">
                     <Calendar size={18} />
                     Today: {new Date().toLocaleDateString()}
                 </div>
             </div>
 
-            <div className="grid gap-4">
-                {appointments.length === 0 ? (
-                    <div className="p-12 text-center bg-white rounded-xl shadow-sm border border-slate-100">
-                        <CheckCircle size={48} className="mx-auto text-slate-300 mb-4" />
-                        <h3 className="text-lg font-medium text-slate-800">No Appointments</h3>
-                        <p className="text-slate-500">Your schedule is clear for now.</p>
+            <div className="flex-1 overflow-hidden">
+                <div className="glass-panel w-full h-full rounded-2xl border border-white/5 shadow-2xl shadow-black/50 flex flex-col">
+                    <div className="p-6 border-b border-white/5 bg-white/5 sticky top-0 backdrop-blur-md z-10">
+                        <h2 className="text-xl font-bold text-slate-200 flex items-center gap-2">
+                            <Activity className="text-violet-500" />
+                            Patient Queue
+                        </h2>
                     </div>
-                ) : (
-                    appointments.map((apt) => (
-                        <div key={apt.id} className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between hover:shadow-md transition-shadow">
-                            <div className="flex items-center gap-6">
-                                <div className="bg-purple-100 text-purple-600 p-4 rounded-lg flex flex-col items-center min-w-[100px]">
-                                    <span className="text-sm font-bold uppercase">{apt.date}</span>
-                                    <span className="text-2xl font-bold">{apt.time}</span>
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-slate-800 mb-1">{apt.patient?.name || "Unknown Patient"}</h3>
-                                    <div className="flex items-center gap-4 text-slate-500 text-sm">
-                                        <span className="flex items-center gap-1"><User size={14} /> {apt.patient?.gender || "N/A"}, {apt.patient?.age || "N/A"} yrs</span>
-                                        <span className="flex items-center gap-1"><Clock size={14} /> 30 min slot</span>
-                                    </div>
-                                    {apt.patient?.diagnosis && (
-                                        <div className="mt-2 text-sm text-slate-600 bg-slate-50 px-2 py-1 rounded inline-block">
-                                            Diagnosis: {apt.patient.diagnosis}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            <div>
-                                <span className={`px-3 py-1 rounded-full text-xs font-bold ${apt.status === 'COMPLETED' ? 'bg-green-100 text-green-700' :
-                                        apt.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
-                                            'bg-blue-100 text-blue-700'
-                                    }`}>
-                                    {apt.status}
-                                </span>
-                            </div>
-                        </div>
-                    ))
-                )}
+
+                    <div className="overflow-auto flex-1">
+                        <table className="w-full text-left border-collapse">
+                            <thead className="bg-white/5 border-b border-white/5 sticky top-0 backdrop-blur-md z-10">
+                                <tr>
+                                    <th className="p-4 font-semibold text-slate-400 text-xs uppercase">Type</th>
+                                    <th className="p-4 font-semibold text-slate-400 text-xs uppercase">Time / Date</th>
+                                    <th className="p-4 font-semibold text-slate-400 text-xs uppercase">Patient Name</th>
+                                    <th className="p-4 font-semibold text-slate-400 text-xs uppercase">Status</th>
+                                    <th className="p-4 font-semibold text-slate-400 text-xs uppercase text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {unifiedList.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="5" className="p-12 text-center">
+                                            <div className="flex flex-col items-center justify-center text-slate-500">
+                                                <CheckCircle size={48} className="mb-4 opacity-50" />
+                                                <h3 className="text-lg font-medium text-slate-400">No Patients</h3>
+                                                <p className="text-sm">Your schedule is clear.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    unifiedList.map((item, index) => (
+                                        <tr key={`${item.type}-${item.id}-${index}`} className="hover:bg-white/5 transition-colors group">
+                                            <td className="p-4">
+                                                <span className={`px-2 py-1 rounded text-xs font-bold ${item.type === 'APPOINTMENT'
+                                                    ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                                                    : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+                                                    }`}>
+                                                    {item.type}
+                                                </span>
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="flex flex-col">
+                                                    {item.type === 'APPOINTMENT' ? (
+                                                        <>
+                                                            <span className="text-slate-200 font-mono font-bold text-lg">{item.appointmentTime?.substring(0, 5)}</span>
+                                                            <span className="text-xs text-slate-500 uppercase font-bold">{item.appointmentDate}</span>
+                                                        </>
+                                                    ) : (
+                                                        <span className="text-slate-400 text-sm">Walk-in</span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="p-4">
+                                                <div className="font-bold text-slate-200 text-lg">{item.patientName || "Unknown"}</div>
+                                                {item.type === 'OPD' && <div className="text-xs text-slate-500">ID: #{item.patientId}</div>}
+                                            </td>
+                                            <td className="p-4">
+                                                <span className="text-slate-400 text-sm">{item.status}</span>
+                                            </td>
+                                            <td className="p-4 text-right">
+                                                <button
+                                                    onClick={() => {
+                                                        if (item.patientId) navigate(`/doctor/consultation/${item.patientId}`);
+                                                        else toast.error("Patient details missing");
+                                                    }}
+                                                    className="inline-flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-[0_0_15px_rgba(124,58,237,0.3)] hover:shadow-[0_0_25px_rgba(124,58,237,0.5)]"
+                                                >
+                                                    Attend Patient <ArrowRight size={16} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     );
