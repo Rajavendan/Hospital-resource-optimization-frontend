@@ -1,15 +1,23 @@
 import axios from "axios";
 
-baseURL: "https://hospital-resource-optimization-backend.onrender.com",
-});
+// Backend base URL (from Vercel env)
+const BASE_URL = import.meta.env.VITE_API_URL;
 
-console.log('✅ Axios Configured with Base URL:', "https://hospital-resource-optimization-backend.onrender.com");
-headers: {
-  "Content-Type": "application/json",
+if (!BASE_URL) {
+  console.error("❌ VITE_API_URL is not defined in environment variables");
+}
+
+const api = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
   },
 });
 
-// Attach JWT automatically
+// Debug log (runs once)
+console.log("✅ Axios Base URL:", BASE_URL);
+
+// Attach JWT automatically to every request
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("jwtToken");
@@ -21,14 +29,20 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Handle 401 globally
+// Global response handler
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      console.warn("Unauthorized – redirect to login");
+      console.warn("⚠️ 401 Unauthorized – clearing token");
+
+      // Clear token
       localStorage.removeItem("jwtToken");
+
+      // Optional: redirect to login page
+      // window.location.href = "/login";
     }
+
     return Promise.reject(error);
   }
 );
