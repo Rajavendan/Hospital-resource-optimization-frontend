@@ -1,9 +1,11 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: "https://hospital-resource-optimization-backend.onrender.com",
-  headers: {
-    "Content-Type": "application/json",
+baseURL: "https://hospital-resource-optimization-backend.onrender.com",
+});
+
+console.log('✅ Axios Configured with Base URL:', "https://hospital-resource-optimization-backend.onrender.com");
+headers: {
+  "Content-Type": "application/json",
   },
 });
 
