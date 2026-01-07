@@ -18,8 +18,8 @@ const Schedule = () => {
         try {
             setLoading(true);
             const [aptRes, opdRes] = await Promise.all([
-                api.get('/appointments/my-schedule'),
-                api.get('/doctors/my-patients')
+                api.get('/api/appointments/my-schedule'),
+                api.get('/api/doctors/my-patients')
             ]);
             setAppointments(aptRes.data);
             setOpdPatients(opdRes.data);
@@ -38,20 +38,21 @@ const Schedule = () => {
     // Unified list approach as requested:
 
     const unifiedList = [
-        ...appointments.map(a => ({ ...a, type: 'APPOINTMENT', sortTime: a.appointmentTime })),
+        ...appointments.map(a => ({ ...a, type: 'APPOINTMENT', sortTime: a.appointmentTime || '00:00:00' })),
         ...opdPatients.map(p => ({
-            id: p.id, // Ensure ID mapping is correct
+            id: p.id,
             patientId: p.id,
             patientName: p.name,
-            appointmentDate: new Date().toISOString().split('T')[0], // Assume today for OPD
-            appointmentTime: '00:00:00', // Default priority
+            appointmentDate: new Date().toISOString().split('T')[0],
+            appointmentTime: '00:00:00',
             status: 'OPD / WALK-IN',
             type: 'OPD',
             sortTime: '00:00:00'
         }))
     ].sort((a, b) => {
-        // Sort by time, Appointments usually have specific times, OPD can be top or bottom
-        return a.sortTime.localeCompare(b.sortTime);
+        const timeA = a.sortTime || '00:00:00';
+        const timeB = b.sortTime || '00:00:00';
+        return timeA.localeCompare(timeB);
     });
 
     return (

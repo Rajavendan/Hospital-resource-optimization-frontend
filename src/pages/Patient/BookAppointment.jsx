@@ -20,7 +20,7 @@ const BookAppointment = () => {
     useEffect(() => {
         if (selectedDepartment) {
             setLoading(true);
-            api.get(`/doctors/by-department/${selectedDepartment}`)
+            api.get(`/api/doctors/by-department/${selectedDepartment}`)
                 .then(res => {
                     setDoctors(res.data);
                     setLoading(false);
@@ -37,7 +37,7 @@ const BookAppointment = () => {
     useEffect(() => {
         if (selectedDoctor && selectedDate) {
             setLoading(true);
-            api.get(`/appointments/slots?doctorId=${selectedDoctor}&date=${selectedDate}`)
+            api.get(`/api/appointments/slots?doctorId=${selectedDoctor}&date=${selectedDate}`)
                 .then(res => {
                     setAvailableSlots(res.data);
                     setLoading(false);
@@ -69,7 +69,7 @@ const BookAppointment = () => {
         };
 
         try {
-            await api.post('/appointments/book', apptData);
+            await api.post('/api/appointments/book', apptData);
 
             // Find doctor name for display
             const docObj = doctors.find(d => d.id === parseInt(selectedDoctor));

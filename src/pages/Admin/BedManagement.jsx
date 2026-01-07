@@ -16,7 +16,7 @@ const BedManagement = () => {
 
   const fetchBeds = async () => {
     try {
-      const response = await api.get('/admin/beds');
+      const response = await api.get('/api/admin/beds');
       setBeds(response.data);
     } catch (error) {
       toast.error('Failed to load beds');
@@ -28,7 +28,7 @@ const BedManagement = () => {
   const handleAddBed = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/admin/beds', { ...newBedData, status: 'AVAILABLE' });
+      await api.post('/api/admin/beds', { ...newBedData, status: 'AVAILABLE' });
       setShowAddForm(false);
       setNewBedData({ ward: 'ICU', bedNumber: '' });
       fetchBeds();
@@ -40,7 +40,7 @@ const BedManagement = () => {
 
   const toggleBedStatus = async (id) => {
     try {
-      await api.put(`/admin/beds/${id}/toggle`);
+      await api.put(`/api/admin/beds/${id}/toggle`);
       fetchBeds();
     } catch {
       toast.error('Failed to update status');
@@ -105,9 +105,8 @@ const BedManagement = () => {
           <button
             key={w}
             onClick={() => setFilter(w)}
-            className={`pb-2 border-b-2 ${
-              filter === w ? 'border-purple-500 text-purple-400' : 'border-transparent text-slate-400'
-            }`}
+            className={`pb-2 border-b-2 ${filter === w ? 'border-purple-500 text-purple-400' : 'border-transparent text-slate-400'
+              }`}
           >
             {w}
           </button>
@@ -123,12 +122,11 @@ const BedManagement = () => {
               if (bed.status !== 'OCCUPIED') toggleBedStatus(bed.id);
             }}
             className={`p-4 rounded-xl border-2 h-40 flex flex-col justify-between cursor-pointer transition-all bg-black
-              ${
-                bed.status === 'AVAILABLE'
-                  ? 'border-white/20 hover:border-green-400'
-                  : bed.status === 'OCCUPIED'
-                    ? 'border-red-400'
-                    : 'border-red-600'
+              ${bed.status === 'AVAILABLE'
+                ? 'border-white/20 hover:border-green-400'
+                : bed.status === 'OCCUPIED'
+                  ? 'border-red-400'
+                  : 'border-red-600'
               }`}
           >
 

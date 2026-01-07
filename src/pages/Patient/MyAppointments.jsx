@@ -54,7 +54,7 @@ const MyAppointments = () => {
                     <div key={apt.id} className="bg-black p-6 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
                         <div className="flex items-start gap-4">
                             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
-                                {new Date(apt.appointmentDate).getDate()}
+                                {apt.appointmentDate ? new Date(apt.appointmentDate).getDate() : 'N/A'}
                             </div>
                             <div>
                                 <h3 className="text-lg font-bold text-white">{apt.doctor?.name || getDoctorName(apt.doctor?.id || apt.doctorId)}</h3>

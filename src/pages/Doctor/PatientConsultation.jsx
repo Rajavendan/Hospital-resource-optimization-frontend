@@ -48,7 +48,7 @@ const PatientConsultation = () => {
 
             // 1. Try finding in "My Patients" list first (preserves existing logic)
             try {
-                const patientRes = await api.get('/doctors/my-patients');
+                const patientRes = await api.get('/api/doctors/my-patients');
                 foundPatient = patientRes.data.find(p => p.id === parseInt(patientId));
             } catch (ignore) { }
 
@@ -56,7 +56,7 @@ const PatientConsultation = () => {
             if (!foundPatient) {
                 try {
                     // Use standard /api/patients/{id} endpoint which requires authenticated role but exists
-                    const directRes = await api.get(`/patients/${patientId}`);
+                    const directRes = await api.get(`/api/patients/${patientId}`);
                     foundPatient = directRes.data;
                 } catch (e) {
                     console.error("Failed to fetch patient directly", e);
@@ -82,7 +82,7 @@ const PatientConsultation = () => {
 
     const fetchReports = async (id) => {
         try {
-            const res = await api.get(`/doctors/reports/${id}`);
+            const res = await api.get(`/api/doctors/reports/${id}`);
             setReports(res.data);
         } catch (err) {
             console.error("Error fetching reports", err);
@@ -91,7 +91,7 @@ const PatientConsultation = () => {
 
     const fetchAvailableTests = async () => {
         try {
-            const res = await api.get('/doctors/tests');
+            const res = await api.get('/api/doctors/tests');
             setAvailableTests(res.data);
         } catch (err) {
             console.error("Failed to fetch tests", err);
@@ -102,7 +102,7 @@ const PatientConsultation = () => {
         if (selectedTests.length === 0) return;
         try {
             setAssigning(true);
-            await api.post(`/doctors/tests/assign/${patient.id}`, { testIds: selectedTests });
+            await api.post(`/api/doctors/tests/assign/${patient.id}`, { testIds: selectedTests });
             toast.success('Tests assigned successfully to Laboratory Queue.');
             fetchAvailableTests(); // Refresh counts
             setSelectedTests([]);
@@ -126,7 +126,7 @@ const PatientConsultation = () => {
             formData.append('patientId', patient.id);
             formData.append('description', reportDesc);
 
-            await api.post('/doctors/reports/upload', formData, {
+            await api.post('/api/doctors/reports/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
@@ -144,7 +144,7 @@ const PatientConsultation = () => {
     const handleCompleteConsultation = async () => {
         if (!window.confirm("Are you sure you want to complete this consultation? The patient will be discharged.")) return;
         try {
-            await api.put(`/doctors/patients/${patient.id}/complete`);
+            await api.put(`/api/doctors/patients/${patient.id}/complete`);
             toast.success("Consultation completed");
             navigate('/doctor/patients');
         } catch (err) {
@@ -156,9 +156,9 @@ const PatientConsultation = () => {
         try {
             let res;
             if (report.source === 'LAB') {
-                res = await api.get(`/reports/download/${report.id}`, { responseType: 'blob' });
+                res = await api.get(`/api/reports/download/${report.id}`, { responseType: 'blob' });
             } else {
-                res = await api.get(`/doctors/reports/download/${report.id}`, { responseType: 'blob' });
+                res = await api.get(`/api/doctors/reports/download/${report.id}`, { responseType: 'blob' });
             }
             const url = window.URL.createObjectURL(new Blob([res.data], { type: report.fileType }));
             window.open(url, '_blank');
@@ -172,9 +172,9 @@ const PatientConsultation = () => {
         try {
             let res;
             if (report.source === 'LAB') {
-                res = await api.get(`/reports/download/${report.id}`, { responseType: 'blob' });
+                res = await api.get(`/api/reports/download/${report.id}`, { responseType: 'blob' });
             } else {
-                res = await api.get(`/doctors/reports/download/${report.id}`, { responseType: 'blob' });
+                res = await api.get(`/api/doctors/reports/download/${report.id}`, { responseType: 'blob' });
             }
             const url = window.URL.createObjectURL(new Blob([res.data]));
             const link = document.createElement('a');

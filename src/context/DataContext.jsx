@@ -26,8 +26,8 @@ export const DataProvider = ({ children }) => {
             try {
                 if (user.role === 'PATIENT') {
                     const [aptRes, docRes] = await Promise.allSettled([
-                        api.get('/appointments/my-schedule'),
-                        api.get('/doctors')
+                        api.get('/api/appointments/my-schedule'),
+                        api.get('/api/doctors')
                     ]);
 
                     setAppointments(aptRes.status === 'fulfilled' ? aptRes.value.data : []);
@@ -38,11 +38,11 @@ export const DataProvider = ({ children }) => {
                     setEquipment([]);
                 } else {
                     const results = await Promise.allSettled([
-                        api.get('/patients'),
-                        api.get('/appointments'),
-                        api.get('/resources/beds'),
-                        api.get('/doctors'),
-                        api.get('/resources/equipment')
+                        api.get('/api/patients'),
+                        api.get('/api/appointments'),
+                        api.get('/api/resources/beds'),
+                        api.get('/api/doctors'),
+                        api.get('/api/resources/equipment')
                     ]);
 
                     setPatients(results[0].status === 'fulfilled' ? results[0].value.data : []);
@@ -64,24 +64,24 @@ export const DataProvider = ({ children }) => {
 
     // --- NO CHANGES BELOW THIS LINE ---
     const addPatient = async (patient) => {
-        const res = await api.post('/patients', patient);
+        const res = await api.post('/api/patients', patient);
         setPatients(prev => [...prev, res.data]);
         return res.data;
     };
 
     const cancelAppointment = async (id) => {
-        await api.delete(`/appointments/${id}`);
+        await api.delete(`/api/appointments/${id}`);
         setAppointments(prev => prev.filter(a => a.id !== id));
     };
 
     const removePatient = async (id) => {
-        await api.delete(`/patients/${id}`);
+        await api.delete(`/api/patients/${id}`);
         setPatients(prev => prev.filter(p => p.id !== id));
     };
 
     const refreshAppointments = async () => {
         if (!user || user.role !== 'PATIENT') return;
-        const res = await api.get('/appointments/my-schedule');
+        const res = await api.get('/api/appointments/my-schedule');
         setAppointments(res.data || []);
         return res.data;
     };

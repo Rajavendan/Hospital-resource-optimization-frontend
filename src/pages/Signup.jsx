@@ -31,7 +31,7 @@ const Signup = () => {
         setError(null);
 
         try {
-            await api.post('/auth/register', formData);
+            await api.post('/api/auth/register', formData);
             toast.success('Registration Successful!');
             navigate('/login');
         } catch (err) {

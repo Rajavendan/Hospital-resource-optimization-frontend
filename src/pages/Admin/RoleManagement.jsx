@@ -25,7 +25,7 @@ const RoleManagement = () => {
 
     const fetchUsers = async () => {
         try {
-            const res = await api.get('/admin/users');
+            const res = await api.get('/api/admin/users');
             setUsers(res.data.filter(u => ['BILLING', 'TESTHANDLER'].includes(u.role)));
             setLoading(false);
         } catch (err) {
@@ -42,10 +42,10 @@ const RoleManagement = () => {
         e.preventDefault();
         try {
             if (editId) {
-                await api.put(`/admin/users/${editId}`, formData);
+                await api.put(`/api/admin/users/${editId}`, formData);
                 toast.success("User updated successfully");
             } else {
-                await api.post('/admin/users', formData);
+                await api.post('/api/admin/users', formData);
                 toast.success("User created successfully");
             }
             setIsModalOpen(false);
@@ -59,7 +59,7 @@ const RoleManagement = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this user?")) return;
         try {
-            await api.delete(`/admin/users/${id}`);
+            await api.delete(`/api/admin/users/${id}`);
             toast.success("User deleted successfully");
             fetchUsers();
         } catch (error) {
@@ -103,7 +103,7 @@ const RoleManagement = () => {
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                        <Users className="text-blue-600" /> 
+                        <Users className="text-blue-600" />
                         <h1 className='text-white'>Specialized Role Management</h1>
                     </h1>
                     <p className="text-slate-500 text-sm mt-1">Manage Billing Staff and Lab Technicians</p>

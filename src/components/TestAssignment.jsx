@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../api/axios';
+import api from '../api/axios';
 import { Beaker, User, Clock, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -26,7 +26,7 @@ const TestAssignment = () => {
         try {
             setLoading(true);
             // Fetch all my patients and find the one matching ID (Security check implicit)
-            const response = await axios.get('/doctors/my-patients');
+            const response = await api.get('/api/doctors/my-patients');
             const foundPatient = response.data.find(p => p.id === parseInt(patientId));
 
             if (foundPatient) {
@@ -48,7 +48,7 @@ const TestAssignment = () => {
             setError('');
             setSuccessMessage('');
 
-            await axios.post(`/doctors/tests/assign/${patient.id}`);
+            await api.post(`/api/doctors/tests/assign/${patient.id}`);
 
             setSuccessMessage('Test assigned successfully and added to queue!');
             setTimeout(() => navigate('/doctor/patients'), 2000); // Redirect back to list

@@ -16,8 +16,8 @@ const TestManagement = () => {
     const fetchData = async () => {
         try {
             const [testRes, queueRes] = await Promise.all([
-                api.get('/staff/tests'),
-                api.get('/staff/tests/queue')
+                api.get('/api/staff/tests'),
+                api.get('/api/staff/tests/queue')
             ]);
             setTests(testRes.data);
             setQueue(queueRes.data);
@@ -30,7 +30,7 @@ const TestManagement = () => {
 
     const handleComplete = async (mappingId) => {
         try {
-            await api.put(`/staff/tests/complete/${mappingId}`);
+            await api.put(`/api/staff/tests/complete/${mappingId}`);
             fetchData();
         } catch (error) {
             console.error("Completion failed", error);

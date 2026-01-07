@@ -14,7 +14,7 @@ const Admission = () => {
     const handleAdmission = async (e) => {
         e.preventDefault();
         try {
-            const response = await api.post('/admission/admit', formData);
+            const response = await api.post('/api/admission/admit', formData);
             setSuccessData(response.data); // Contains { message, patient, bed }
             setShowForm(false);
             setFormData({ name: '', age: '', gender: 'Male', contact: '', severity: 1, diagnosis: '', ward: 'GENERAL' });

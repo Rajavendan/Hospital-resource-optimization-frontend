@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "../../api/axios";
+import api from "../../api/axios";
 import {
   User,
   Mail,
@@ -45,7 +45,7 @@ const DoctorManagement = () => {
 
   const fetchDoctors = async () => {
     try {
-      const res = await axios.get("/doctors");
+      const res = await api.get("/api/doctors");
       setDoctors(res.data);
       setLoading(false);
     } catch (err) {
@@ -80,7 +80,7 @@ const DoctorManagement = () => {
     setFormData({
       name: doctor.name,
       email: doctor.email,
-      password: "", 
+      password: "",
       specialization: doctor.specialization,
       phoneNumber: doctor.phoneNumber || "",
       shiftStartTime: doctor.shiftStartTime,
@@ -94,10 +94,10 @@ const DoctorManagement = () => {
     e.preventDefault();
     try {
       if (isEditing) {
-        await axios.put(`/doctors/${currentDoctor.id}`, formData);
+        await api.put(`/api/doctors/${currentDoctor.id}`, formData);
         setMessage({ type: "success", text: "Doctor updated successfully." });
       } else {
-        await axios.post("/doctors", formData);
+        await api.post("/api/doctors", formData);
         setMessage({
           type: "success",
           text: "Doctor registered successfully.",
@@ -123,7 +123,7 @@ const DoctorManagement = () => {
     )
       return;
     try {
-      await axios.delete(`/doctors/${id}`);
+      await api.delete(`/api/doctors/${id}`);
       setMessage({ type: "success", text: "Doctor deleted successfully." });
       fetchDoctors();
       setTimeout(() => setMessage(null), 3000);
@@ -162,11 +162,10 @@ const DoctorManagement = () => {
       {/* Message Alert */}
       {message && (
         <div
-          className={`p-4 rounded-lg flex items-center gap-2 ${
-            message.type === "success"
-              ? "bg-green-50 text-green-700"
-              : "bg-red-50 text-red-700"
-          }`}
+          className={`p-4 rounded-lg flex items-center gap-2 ${message.type === "success"
+            ? "bg-green-50 text-green-700"
+            : "bg-red-50 text-red-700"
+            }`}
         >
           {message.type === "success" ? (
             <CheckCircle size={20} />
@@ -267,9 +266,9 @@ const DoctorManagement = () => {
                       onClick={() => handleDelete(doctor.id)}
                       className="p-2 rounded-lg cursor-pointer"
                     >
-                      <Trash2 size={18} 
-                      className="text-red-400 transition-transform duration-200 hover:scale-150"
-/>
+                      <Trash2 size={18}
+                        className="text-red-400 transition-transform duration-200 hover:scale-150"
+                      />
                     </button>
                   </td>
                 </tr>

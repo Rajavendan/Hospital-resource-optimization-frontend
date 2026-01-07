@@ -14,7 +14,7 @@ const TestHandlerDashboard = () => {
 
     const fetchTasks = async () => {
         try {
-            const res = await api.get('/testhandler/tasks');
+            const res = await api.get('/api/testhandler/tasks');
             setTasks(res.data);
             setLoading(false);
         } catch (err) {
@@ -34,7 +34,7 @@ const TestHandlerDashboard = () => {
         formData.append("file", file);
 
         try {
-            await api.post(`/testhandler/${id}/complete`, formData, {
+            await api.post(`/api/testhandler/${id}/complete`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             toast.success("Report uploaded and test marked complete!");

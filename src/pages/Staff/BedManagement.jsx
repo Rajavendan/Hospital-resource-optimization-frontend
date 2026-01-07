@@ -16,7 +16,7 @@ const BedManagement = () => {
 
     const fetchBeds = async () => {
         try {
-            const response = await api.get('/staff/beds');
+            const response = await api.get('/api/staff/beds');
             setBeds(response.data);
         } catch (error) {
             console.error("Failed to fetch beds", error);
@@ -29,7 +29,7 @@ const BedManagement = () => {
     const handleAddBed = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/staff/beds', { ...newBedData, status: 'AVAILABLE' });
+            await api.post('/api/staff/beds', { ...newBedData, status: 'AVAILABLE' });
             setShowAddForm(false);
             setNewBedData({ ward: 'ICU', bedNumber: '' });
             fetchBeds(); // Refresh list
@@ -42,7 +42,7 @@ const BedManagement = () => {
 
     const toggleBedStatus = async (id) => {
         try {
-            await api.put(`/staff/beds/${id}/toggle`);
+            await api.put(`/api/staff/beds/${id}/toggle`);
             fetchBeds();
         } catch (error) {
             console.error("Failed to toggle status", error);

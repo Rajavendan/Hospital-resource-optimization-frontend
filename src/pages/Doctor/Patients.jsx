@@ -23,8 +23,8 @@ const Patients = () => {
         const fetchData = async () => {
             try {
                 const [opdRes, aptRes] = await Promise.all([
-                    api.get('/doctors/my-patients'),
-                    api.get('/appointments/my-schedule')
+                    api.get('/api/doctors/my-patients'),
+                    api.get('/api/appointments/my-schedule')
                 ]);
                 setOpdPatients(opdRes.data);
 

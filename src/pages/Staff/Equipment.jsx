@@ -13,7 +13,7 @@ const Equipment = () => {
     const fetchEquipment = async () => {
         try {
             // Use correct API endpoint accessible by STAFF
-            const response = await api.get('/resources/equipment');
+            const response = await api.get('/api/resources/equipment');
             setEquipment(response.data);
         } catch (error) {
             console.error("Failed to fetch equipment", error);

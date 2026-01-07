@@ -13,7 +13,7 @@ const BillingDashboard = () => {
 
     const fetchPending = async () => {
         try {
-            const res = await api.get('/billing/pending');
+            const res = await api.get('/api/billing/pending');
             setPending(res.data);
             setLoading(false);
         } catch (err) {
@@ -25,7 +25,7 @@ const BillingDashboard = () => {
     const handlePay = async (id) => {
         if (!window.confirm("Confirm payment receipt?")) return;
         try {
-            await api.post(`/billing/pay/${id}`);
+            await api.post(`/api/billing/pay/${id}`);
             toast.success("Payment marked as successful");
             fetchPending();
         } catch (err) {

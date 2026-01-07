@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (username, password) => {
         try {
-            const response = await api.post('/auth/login', { username, password });
+            const response = await api.post('/api/auth/login', { username, password });
 
             const { accessToken, role, name, id } = response.data;
 
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
             const userData = {
                 id,
                 name: name || username,
-                role,             
+                role,
                 username
             };
 

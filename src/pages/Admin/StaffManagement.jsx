@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../../api/axios';
+import api from '../../api/axios';
 import {
     User,
     Mail,
@@ -43,7 +43,7 @@ const StaffManagement = () => {
 
     const fetchStaff = async () => {
         try {
-            const res = await axios.get('/admin/staff');
+            const res = await api.get('/api/admin/staff');
             setStaffList(res.data);
             setLoading(false);
         } catch (err) {
@@ -88,10 +88,10 @@ const StaffManagement = () => {
         e.preventDefault();
         try {
             if (isEditing) {
-                await axios.put(`/admin/staff/${currentStaff.id}`, formData);
+                await api.put(`/api/admin/staff/${currentStaff.id}`, formData);
                 setMessage({ type: 'success', text: 'Staff updated successfully.' });
             } else {
-                await axios.post('/admin/staff', formData);
+                await api.post('/api/admin/staff', formData);
                 setMessage({ type: 'success', text: 'Staff registered successfully.' });
             }
             setShowModal(false);
@@ -105,7 +105,7 @@ const StaffManagement = () => {
 
     const handleToggleStatus = async (id) => {
         try {
-            await axios.put(`/admin/staff/${id}/toggle`);
+            await api.put(`/api/admin/staff/${id}/toggle`);
             setMessage({ type: 'success', text: 'Staff status updated.' });
             fetchStaff();
             setTimeout(() => setMessage(null), 3000);
@@ -117,7 +117,7 @@ const StaffManagement = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this staff member? This action cannot be undone.")) return;
         try {
-            await axios.delete(`/admin/staff/${id}`);
+            await api.delete(`/api/admin/staff/${id}`);
             setMessage({ type: 'success', text: 'Staff deleted successfully.' });
             fetchStaff();
             setTimeout(() => setMessage(null), 3000);
@@ -217,12 +217,12 @@ const StaffManagement = () => {
                                     </td>
                                     <td className="p-4 text-right space-x-2">
                                         <button onClick={() => openEditModal(staff)} className="p-2 text-blue-600  rounded-lg">
-                                            <Edit2 size={18} 
-                                            className="text-blue-400 transition-transform duration-200 hover:scale-150"/>
+                                            <Edit2 size={18}
+                                                className="text-blue-400 transition-transform duration-200 hover:scale-150" />
                                         </button>
                                         <button onClick={() => handleDelete(staff.id)} className="p-2 text-red-600  rounded-lg">
-                                            <Trash2 size={18} 
-                                            className="text-red-400 transition-transform duration-200 hover:scale-150"/>
+                                            <Trash2 size={18}
+                                                className="text-red-400 transition-transform duration-200 hover:scale-150" />
                                         </button>
                                     </td>
                                 </tr>

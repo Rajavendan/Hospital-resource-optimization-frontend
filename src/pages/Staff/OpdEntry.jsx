@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from '../../api/axios';
+import api from '../../api/axios';
 import { UserPlus, Activity, CheckCircle, AlertCircle } from 'lucide-react';
 
 const OpdEntry = () => {
@@ -27,7 +27,7 @@ const OpdEntry = () => {
         setAssignedDoctor(null);
 
         try {
-            const response = await axios.post('/staff/opd', formData);
+            const response = await api.post('/api/staff/opd', formData);
             setAssignedDoctor(response.data.assignedDoctor);
             setMessage({ type: 'success', text: 'Patient registered and doctor assigned successfully!' });
             setFormData({
@@ -38,7 +38,7 @@ const OpdEntry = () => {
                 diagnosis: '',
                 severity: 1
             });
-        } catch (error) {   
+        } catch (error) {
             console.error(error);
             setMessage({ type: 'error', text: 'Failed to register patient. Please check system status.' });
         } finally {

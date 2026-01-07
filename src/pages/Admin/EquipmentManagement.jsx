@@ -17,7 +17,7 @@ const EquipmentManagement = () => {
     const fetchEquipment = async () => {
         try {
             setLoading(true);
-            const response = await api.get('/admin/equipment');
+            const response = await api.get('/api/admin/equipment');
             setEquipmentList(response.data);
             setError(null);
         } catch (err) {
@@ -32,9 +32,9 @@ const EquipmentManagement = () => {
         e.preventDefault();
         try {
             if (editId) {
-                await api.put(`/admin/equipment/${editId}`, formData);
+                await api.put(`/api/admin/equipment/${editId}`, formData);
             } else {
-                await api.post('/admin/equipment', formData);
+                await api.post('/api/admin/equipment', formData);
             }
             setShowModal(false);
             setFormData({ name: '', type: '', status: 'AVAILABLE', handlerName: 'Unassigned' });
@@ -58,7 +58,7 @@ const EquipmentManagement = () => {
 
     const handleToggleStatus = async (id) => {
         try {
-            await api.put(`/admin/equipment/${id}/toggle`);
+            await api.put(`/api/admin/equipment/${id}/toggle`);
             fetchEquipment();
         } catch (err) {
             console.error(err);
@@ -111,8 +111,8 @@ const EquipmentManagement = () => {
                                     <td className="p-4 text-slate-600  text-white">{eq.type}</td>
                                     <td className="p-4">
                                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${eq.status === 'AVAILABLE' ? 'bg-green-100 text-green-700' :
-                                                eq.status === 'IN_USE' ? 'bg-blue-100 text-blue-700' :
-                                                    'bg-red-100 text-red-700'
+                                            eq.status === 'IN_USE' ? 'bg-blue-100 text-blue-700' :
+                                                'bg-red-100 text-red-700'
                                             }`}>
                                             {eq.status}
                                         </span>
@@ -184,7 +184,7 @@ const EquipmentManagement = () => {
                                     Cancel
                                 </button>
                                 <button
-                                    type="submit"    
+                                    type="submit"
                                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                                 >
                                     {editId ? 'Update' : 'Create'}

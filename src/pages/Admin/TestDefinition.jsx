@@ -26,7 +26,7 @@ const TestDefinition = () => {
     const fetchTests = async () => {
         try {
             setLoading(true);
-            const response = await api.get('/admin/tests');
+            const response = await api.get('/api/admin/tests');
             setTests(response.data);
             setError(null);
         } catch (err) {
@@ -41,9 +41,9 @@ const TestDefinition = () => {
         e.preventDefault();
         try {
             if (editId) {
-                await api.put(`/admin/tests/${editId}`, formData);
+                await api.put(`/api/admin/tests/${editId}`, formData);
             } else {
-                await api.post('/admin/tests', formData);
+                await api.post('/api/admin/tests', formData);
             }
             setShowModal(false);
             setFormData({ name: '', department: 'General', cost: '', maxCapacity: 20, description: '', status: 'ACTIVE' });
@@ -76,7 +76,7 @@ const TestDefinition = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this test?")) return;
         try {
-            await api.delete(`/admin/tests/${id}`);
+            await api.delete(`/api/admin/tests/${id}`);
             fetchTests();
         } catch (err) {
             setError("Failed to delete test.");
