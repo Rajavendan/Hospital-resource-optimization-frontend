@@ -1,11 +1,7 @@
 import axios from "axios";
+import { auth } from "../firebase";
 
-// Backend base URL (from Vercel env)
 const BASE_URL = import.meta.env.VITE_API_URL;
-
-if (!BASE_URL) {
-  console.error("❌ VITE_API_URL is not defined in environment variables");
-}
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -14,36 +10,29 @@ const api = axios.create({
   },
 });
 
-// Debug log (runs once)
 console.log("✅ Axios Base URL:", BASE_URL);
 
-// Attach JWT automatically to every request
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("jwtToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// Attach Firebase ID token
+api.interceptors.request.use(async (config) => {
+  const user = auth.currentUser;
 
-// Global response handler
+  if (user) {
+    const token = await user.getIdToken(true); // 🔥 force refresh
+    console.log("Adding token to header:", token.substring(0, 10) + "...");
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+
+// Global error handler
 api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      console.warn("⚠️ 401 Unauthorized – clearing token");
-
-      // Clear token
-      localStorage.removeItem("jwtToken");
-
-      // Optional: redirect to login page
-      // window.location.href = "/login";
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      console.warn("⚠️ Unauthorized API response");
     }
-
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
 

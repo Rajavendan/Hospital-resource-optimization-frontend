@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
 import { UserPlus, Shield, User, Lock, Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -25,19 +27,32 @@ const Signup = () => {
 
 
 
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
         try {
+            // 1. Create User in Firebase
+            await createUserWithEmailAndPassword(auth, formData.username, formData.password);
+
+            // 2. Create User in Backend (DB)
+            // Backend handles the actual profile creation
+            // We send the same password, but backend ignores it or stores dummy
             await api.post('/api/auth/register', formData);
+
             toast.success('Registration Successful!');
             navigate('/login');
         } catch (err) {
-
             console.error("Registration failed", err);
-            setError(err.response?.data?.message || 'Registration failed. Please try again.');
+            // Firebase error handling
+            if (err.code === 'auth/email-already-in-use') {
+                setError('Email is already registered in Firebase.');
+            } else {
+                setError(err.response?.data?.message || err.message || 'Registration failed.');
+            }
         } finally {
             setLoading(false);
         }

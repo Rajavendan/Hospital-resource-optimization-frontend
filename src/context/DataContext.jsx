@@ -18,8 +18,7 @@ export const DataProvider = ({ children }) => {
     useEffect(() => {
         if (!user) return;
 
-        const token = localStorage.getItem('jwtToken');
-        if (!token) return;
+
 
         const fetchData = async () => {
             setLoading(true);
