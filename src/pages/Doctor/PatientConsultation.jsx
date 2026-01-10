@@ -126,16 +126,16 @@ const PatientConsultation = () => {
             formData.append('patientId', patient.id);
             formData.append('description', reportDesc);
 
-            await api.post('/api/doctors/reports/upload', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            await api.post('/api/doctors/reports/upload', formData);
 
             toast.success('Report uploaded successfully.');
             setSelectedFile(null);
             setReportDesc('');
             fetchReports(patient.id); // Refresh list
         } catch (err) {
-            toast.error('Upload failed.');
+            console.error("Upload Error:", err);
+            const errMsg = err.response?.data || err.message || "Upload failed.";
+            toast.error("Upload Failed: " + (typeof errMsg === 'object' ? JSON.stringify(errMsg) : errMsg));
         } finally {
             setUploading(false);
         }

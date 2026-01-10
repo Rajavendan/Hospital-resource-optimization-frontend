@@ -34,13 +34,13 @@ const TestHandlerDashboard = () => {
         formData.append("file", file);
 
         try {
-            await api.post(`/api/testhandler/${id}/complete`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            await api.post(`/api/testhandler/${id}/complete`, formData);
             toast.success("Report uploaded and test marked complete!");
             fetchTasks();
         } catch (err) {
-            toast.error("Upload failed.");
+            console.error("Upload Error Details:", err);
+            const errMsg = err.response?.data?.error || err.response?.data?.message || err.message || "Upload failed.";
+            toast.error("Upload Failure: " + errMsg);
         } finally {
             setUploading(null);
         }

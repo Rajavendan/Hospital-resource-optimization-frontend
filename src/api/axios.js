@@ -5,9 +5,6 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 
 const api = axios.create({
   baseURL: BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 console.log("✅ Axios Base URL:", BASE_URL);
@@ -17,7 +14,7 @@ api.interceptors.request.use(async (config) => {
   const user = auth.currentUser;
 
   if (user) {
-    const token = await user.getIdToken(true); // 🔥 force refresh
+    const token = await user.getIdToken(); // Use cached token unless expired
     console.log("Adding token to header:", token.substring(0, 10) + "...");
     config.headers.Authorization = `Bearer ${token}`;
   }
