@@ -4,11 +4,13 @@ import { useAuth } from '../../context/AuthContext';
 import { CalendarCheck, Clock, MapPin, XCircle, RefreshCw } from 'lucide-react';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
+import VideoMeeting from '../../components/VideoMeeting';
 
 const MyAppointments = () => {
     const { user } = useAuth();
     const { appointments, cancelAppointment, doctors, refreshAppointments } = useData();
     const [refreshing, setRefreshing] = useState(false);
+    const [activeMeeting, setActiveMeeting] = useState(null); // State for video call
 
     // Backend already filters by patient context, so we trust the response.
     const myAppointments = appointments;
@@ -39,6 +41,13 @@ const MyAppointments = () => {
 
     return (
         <div className="max-w-4xl mx-auto">
+            {/* Embedded Video Call Overlay */}
+            {activeMeeting && (
+                <VideoMeeting
+                    meetingLink={activeMeeting}
+                    onClose={() => setActiveMeeting(null)}
+                />
+            )}
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold text-white">My Appointments</h1>
                 <button
@@ -58,66 +67,81 @@ const MyAppointments = () => {
 
                     return (
                         <div key={apt.id} className="bg-black p-6 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
-                        <div className="flex items-start gap-4">
-                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
-                                {apt.appointmentDate ? new Date(apt.appointmentDate).getDate() : 'N/A'}
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-bold text-white">{apt.doctor?.name || getDoctorName(apt.doctor?.id || apt.doctorId)}</h3>
-                                <p className="text-white text-sm">
-                                    {isVideo ? 'Video Consult' : 'In‑Person Visit'}
-                                </p>
-                                <div className="flex items-center gap-4 mt-2 text-sm text-slate-600">
-                                    <span className="flex items-center gap-1 text-white">
-                                        <Clock size={14} /> {apt.appointmentTime}
-                                    </span>
-                                    {!isVideo && (
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center font-bold text-lg">
+                                    {apt.appointmentDate ? new Date(apt.appointmentDate).getDate() : 'N/A'}
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-white">{apt.doctor?.name || getDoctorName(apt.doctor?.id || apt.doctorId)}</h3>
+                                    <p className="text-white text-sm">
+                                        {isVideo ? 'Video Consult' : 'In‑Person Visit'}
+                                    </p>
+                                    <div className="flex items-center gap-4 mt-2 text-sm text-slate-600">
                                         <span className="flex items-center gap-1 text-white">
-                                            <MapPin size={14} /> General Ward
+                                            <Clock size={14} /> {apt.appointmentTime}
                                         </span>
-                                    )}
+                                        {!isVideo && (
+                                            <span className="flex items-center gap-1 text-white">
+                                                <MapPin size={14} /> General Ward
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="flex flex-col items-end gap-2">
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusLabel === 'ACTIVE' ? 'bg-green-100 text-green-700' : statusLabel === 'EXPIRED' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
-                                }`}>
-                                {statusLabel}
-                            </span>
+                            <div className="flex flex-col items-end gap-2">
+                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusLabel === 'ACTIVE' ? 'bg-green-100 text-green-700' : statusLabel === 'EXPIRED' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
+                                    }`}>
+                                    {statusLabel}
+                                </span>
 
-                            {isVideo && (
+                                {isVideo && (
+                                    <button
+                                        onClick={async () => {
+                                            console.log("Attempting to join appointment:", apt.id);
+                                            try {
+                                                const res = await api.post(`/api/appointments/${apt.id}/join`);
+                                                console.log("Join response:", res.data);
+
+                                                if (!res.data.allowed) {
+                                                    console.warn("Join denied:", res.data.reason);
+                                                    toast.error(res.data.reason || 'Unable to join this video consultation.');
+                                                    return;
+                                                }
+
+                                                if (res.data.meetingLink) {
+                                                    console.log("====================================");
+                                                    console.log("MEETING LINK:", res.data.meetingLink);
+                                                    console.log("====================================");
+                                                    // OPEN IN EMBEDDED VIEW
+                                                    setActiveMeeting(res.data.meetingLink);
+                                                } else {
+                                                    console.error("Join allowed but no link provided.");
+                                                    toast.error('No meeting link received from server.');
+                                                }
+                                            } catch (err) {
+                                                console.error('Join video failed', err);
+                                                if (err.response) {
+                                                    console.error("Server Error:", err.response.data);
+                                                    toast.error(err.response.data.error || 'Failed to join video call.');
+                                                } else {
+                                                    toast.error('Network error. Failed to join video call.');
+                                                }
+                                            }
+                                        }}
+                                        className="text-xs flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-500"
+                                    >
+                                        Join Video
+                                    </button>
+                                )}
                                 <button
-                                    onClick={async () => {
-                                        try {
-                                            const res = await api.post(`/api/appointments/${apt.id}/join`);
-                                            if (!res.data.allowed) {
-                                                toast.error(res.data.reason || 'Unable to join this video consultation.');
-                                                return;
-                                            }
-                                            if (res.data.meetingLink) {
-                                                window.open(res.data.meetingLink, '_blank', 'noopener,noreferrer');
-                                            } else {
-                                                toast.error('No meeting link available.');
-                                            }
-                                        } catch (err) {
-                                            console.error('Join video failed', err);
-                                            toast.error('Failed to join video call.');
-                                        }
-                                    }}
-                                    className="text-xs flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-500"
+                                    onClick={() => cancelAppointment(apt.id)}
+                                    className="text-red-500 hover:text-red-700 text-xs flex items-center gap-1"
                                 >
-                                    Join Video
+                                    <XCircle size={14} /> Cancel
                                 </button>
-                            )}
-                            <button
-                                onClick={() => cancelAppointment(apt.id)}
-                                className="text-red-500 hover:text-red-700 text-xs flex items-center gap-1"
-                            >
-                                <XCircle size={14} /> Cancel
-                            </button>
+                            </div>
                         </div>
-                    </div>
                     );
                 })}
 

@@ -10,10 +10,12 @@ import {
     CalendarCheck,
     Bell,
     BarChart2,
-    CheckCircle
+    CheckCircle,
+    Siren
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import toast from 'react-hot-toast';
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -40,6 +42,20 @@ const Dashboard = () => {
         }
     };
 
+    const handleEmergencyAlert = () => {
+        // Mocking the future Firebase notification
+        toast.error("EMERGENCY ALERT SENT!\nNotifying: doctor2@hospital.com, doctor3@hospital.com", {
+            duration: 5000,
+            icon: '🚨',
+            style: {
+                background: '#ef4444',
+                color: '#fff',
+                fontWeight: 'bold'
+            },
+        });
+        console.log("Firebase alert placeholder: Triggering notification for doctor2@hospital.com and doctor3@hospital.com");
+    };
+
     if (user.role === 'staff') {
         if (loading && !stats) return <div className="p-8 text-center text-slate-400">Loading dashboard...</div>;
 
@@ -51,7 +67,14 @@ const Dashboard = () => {
                         <p className="text-slate-400">Overview & Real-time Metrics</p>
                     </div>
                     <div className="flex items-center gap-4">
-                        <div className="bg-zinc-900 px-4 py-2 rounded-lg border border-zinc-800 text-sm font-medium text-slate-400">
+                        <button
+                            onClick={handleEmergencyAlert}
+                            className="bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-[0_0_15px_rgba(239,68,68,0.4)] hover:shadow-[0_0_25px_rgba(239,68,68,0.6)] transition-all animate-pulse"
+                        >
+                            <Siren size={20} />
+                            TRIGGER EMERGENCY
+                        </button>
+                        <div className="bg-zinc-900 px-4 py-2 rounded-lg border border-zinc-800 text-sm font-medium text-slate-400 hidden sm:block">
                             {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                         </div>
                     </div>

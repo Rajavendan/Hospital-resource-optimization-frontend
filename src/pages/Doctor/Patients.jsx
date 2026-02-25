@@ -29,7 +29,12 @@ const Patients = () => {
                 setOpdPatients(opdRes.data);
 
                 // Filter appointments to unique patients if needed, or just list appointments
-                setScheduledPatients(aptRes.data);
+                const activeAppointments = aptRes.data.filter(apt =>
+                    apt.status !== 'COMPLETED' &&
+                    apt.status !== 'CANCELLED' &&
+                    apt.status !== 'DISCHARGED'
+                );
+                setScheduledPatients(activeAppointments);
             } catch (err) {
                 setError("Failed to load patient lists.");
                 console.error(err);

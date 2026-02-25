@@ -90,8 +90,10 @@ const BookAppointment = () => {
             let msg = "Failed to book appointment";
             if (error.response) {
                 if (error.response.status === 409) {
-                    msg = error.response.data.message || "This slot is no longer available.";
+                    msg = error.response.data.message || error.response.data.error || "This slot is no longer available.";
                     setAvailableSlots(prev => prev.filter(s => s !== selectedTime));
+                } else if (error.response.data.error) {
+                    msg = error.response.data.error;
                 } else {
                     msg = error.response.data.message || "An error occurred.";
                 }

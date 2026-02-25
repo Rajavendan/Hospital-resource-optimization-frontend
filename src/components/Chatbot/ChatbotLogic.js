@@ -77,8 +77,8 @@ class ChatbotLogic {
     constructor(setStateCallback) {
         this.setState = setStateCallback;
         this.context = {
-            step: 'idle', // idle, awaiting_doctor, awaiting_date, awaiting_time, awaiting_confirmation, awaiting_reschedule_select
-            data: {}, // Stores booking details: { doctorId, doctorName, date, time, oldAppointmentId }
+            step: 'idle', // idle, awaiting_doctor, awaiting_date, awaiting_time, awaiting_type, awaiting_confirmation, awaiting_reschedule_select
+            data: {}, // Stores booking details: { doctorId, doctorName, date, time, type, oldAppointmentId }
             allDoctors: [],
             myAppointments: []
         };
@@ -568,27 +568,55 @@ class ChatbotLogic {
 
             case 'awaiting_time':
                 let time = input;
-                if (!time.includes(':')) time = time + ":00";
-                if (time.length === 4) time = "0" + time;
-                if (time.split(':').length === 2) time += ":00";
+                // If it's something like "10", make it "10:00"
+                if (!time.includes(':')) {
+                    time = time.padStart(2, '0') + ':00';
+                }
+
+                // Keep only HH:mm
+                const parts = time.split(':');
+                if (parts.length >= 2) {
+                    time = parts[0].padStart(2, '0') + ':' + parts[1].padStart(2, '0');
+                }
 
                 if (this.isValidTimeFormat(time)) {
                     this.context.data.time = time;
-                    this.context.step = 'awaiting_confirmation';
-
-                    const actionType = this.context.data.oldAppointmentId ? "RESCHEDULE" : "BOOK";
-                    const prompt = actionType === "RESCHEDULE"
-                        ? `Confirm moving your appointment with Dr. ${this.context.data.doctor.name} to ${this.context.data.date} at ${time}?`
-                        : `Please confirm: Appointment with Dr. ${this.context.data.doctor.name} on ${this.context.data.date} at ${time}?`;
+                    this.context.step = 'awaiting_type';
 
                     return {
-                        text: prompt,
-                        options: ['Yes, confirm', 'Cancel']
+                        text: `Would you like an In-Person (Physical) or Video Consultation?`,
+                        options: ['Physical', 'Video']
                     };
                 }
                 const switchResponseTime = await checkContextSwitch();
                 if (switchResponseTime) return switchResponseTime;
                 return { text: "Please enter a valid time in HH:mm format (24-hour)." };
+
+            case 'awaiting_type':
+                let type = 'PHYSICAL';
+                if (input.toLowerCase().includes('video') || input.toLowerCase().includes('virtual')) {
+                    type = 'VIDEO';
+                } else if (input.toLowerCase().includes('physical') || input.toLowerCase().includes('in-person')) {
+                    type = 'PHYSICAL';
+                } else {
+                    return {
+                        text: `Please select 'Physical' or 'Video'.`,
+                        options: ['Physical', 'Video']
+                    };
+                }
+
+                this.context.data.type = type;
+                this.context.step = 'awaiting_confirmation';
+
+                const actionType = this.context.data.oldAppointmentId ? "RESCHEDULE" : "BOOK";
+                const prompt = actionType === "RESCHEDULE"
+                    ? `Confirm moving your appointment with Dr. ${this.context.data.doctor.name} to ${this.context.data.date} at ${this.context.data.time} (${type})?`
+                    : `Please confirm: ${type} Appointment with Dr. ${this.context.data.doctor.name} on ${this.context.data.date} at ${this.context.data.time}?`;
+
+                return {
+                    text: prompt,
+                    options: ['Yes, confirm', 'Cancel']
+                };
 
             case 'awaiting_confirmation':
                 if (input.includes('yes') || input.includes('confirm') || input.includes('book')) {
@@ -654,7 +682,8 @@ class ChatbotLogic {
                 doctorId: this.context.data.doctor.id,
                 appointmentDate: this.context.data.date,
                 appointmentTime: this.context.data.time,
-                status: "SCHEDULED"
+                status: "SCHEDULED",
+                consultationType: this.context.data.type || "PHYSICAL"
             };
 
             await api.post('/api/appointments/book', payload);

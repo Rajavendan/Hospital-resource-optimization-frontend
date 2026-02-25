@@ -4,11 +4,14 @@ import api from '../../api/axios';
 import { Calendar, Clock, User, CheckCircle, Activity, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+import VideoMeeting from '../../components/VideoMeeting';
+
 const Schedule = () => {
     const navigate = useNavigate();
     const [appointments, setAppointments] = useState([]);
     const [opdPatients, setOpdPatients] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeMeeting, setActiveMeeting] = useState(null); // State for video call
 
     useEffect(() => {
         fetchData();
@@ -45,11 +48,15 @@ const Schedule = () => {
             patientName: p.name,
             appointmentDate: new Date().toISOString().split('T')[0],
             appointmentTime: '00:00:00',
-            status: 'OPD / WALK-IN',
+            status: p.status || 'OPD / WALK-IN',
             type: 'OPD',
             sortTime: '00:00:00'
         }))
-    ].sort((a, b) => {
+    ].filter(item =>
+        item.status !== 'COMPLETED' &&
+        item.status !== 'CANCELLED' &&
+        item.status !== 'DISCHARGED'
+    ).sort((a, b) => {
         const timeA = a.sortTime || '00:00:00';
         const timeB = b.sortTime || '00:00:00';
         return timeA.localeCompare(timeB);
@@ -57,6 +64,14 @@ const Schedule = () => {
 
     return (
         <div className="h-[calc(100vh-6rem)] flex flex-col">
+            {/* Embedded Video Call Overlay */}
+            {activeMeeting && (
+                <VideoMeeting
+                    meetingLink={activeMeeting}
+                    onClose={() => setActiveMeeting(null)}
+                />
+            )}
+
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-bold text-slate-100 tracking-tight">My Schedule & Patients</h1>
@@ -141,7 +156,8 @@ const Schedule = () => {
                                                                     return;
                                                                 }
                                                                 if (res.data.meetingLink) {
-                                                                    window.open(res.data.meetingLink, '_blank', 'noopener,noreferrer');
+                                                                    // OPEN IN EMBEDDED VIEW
+                                                                    setActiveMeeting(res.data.meetingLink);
                                                                 } else {
                                                                     toast.error('No meeting link available.');
                                                                 }

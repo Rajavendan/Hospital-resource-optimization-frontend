@@ -194,10 +194,23 @@ const PatientConsultation = () => {
         try {
             await api.put(`/api/doctors/patients/${patient.id}/complete`, payload);
             toast.success("Consultation completed!");
-            navigate('/doctor/patients');
+            navigate('/schedule');
         } catch (err) {
             console.error(err);
             toast.error('Failed to complete consultation.');
+        }
+    };
+
+    const handleCancelConsultation = async () => {
+        if (!window.confirm("Are you sure you want to cancel this consultation? The patient will be removed from your queue.")) return;
+
+        try {
+            await api.put(`/api/doctors/patients/${patient.id}/cancel`);
+            toast.success("Consultation cancelled.");
+            navigate('/schedule');
+        } catch (err) {
+            console.error(err);
+            toast.error('Failed to cancel consultation.');
         }
     };
 
@@ -241,7 +254,7 @@ const PatientConsultation = () => {
                         </div>
                     </div>
                     <div className="flex gap-3">
-                        <button onClick={() => navigate('/doctor/patients')} className="px-4 py-2 border border-slate-700 rounded-lg text-slate-300 hover:bg-slate-900">
+                        <button onClick={handleCancelConsultation} className="px-4 py-2 border border-slate-700 rounded-lg text-slate-300 hover:bg-slate-900">
                             Cancel
                         </button>
                         <button onClick={handleCompleteConsultation} className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-bold flex items-center gap-2">
