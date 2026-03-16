@@ -8,52 +8,6 @@ import clsx from 'clsx';
 const Sidebar = ({ isOpen, setIsOpen }) => {
     const { user } = useAuth();
     const location = useLocation();
-    const [nextVideoCall, setNextVideoCall] = useState(null);
-
-    useEffect(() => {
-        if (user && user.role === 'patient') {
-            fetchNextCall();
-        }
-    }, [user, location.pathname]); // Refresh on route change essentially
-
-    const fetchNextCall = async () => {
-        try {
-            const res = await api.get('/api/patient/appointments/upcoming');
-            // Filter video calls
-            const videoCalls = res.data.filter(apt =>
-                (apt.consultationType === 'VIDEO' || apt.meetingLink) &&
-                apt.status !== 'CANCELLED' &&
-                apt.status !== 'COMPLETED'
-            );
-
-            // Find the closest one
-            // We assume the backend returns them sorted or we sort them
-            // Backend "upcoming" typically means future, but we also want to catch "today's" active ones.
-            // Let's just pick the first one that is either active (window) or future.
-
-            const now = new Date();
-            const relevant = videoCalls.find(apt => {
-                // Convert backend array/string date
-                let dateStr = apt.date;
-                if (Array.isArray(apt.date)) dateStr = `${apt.date[0]}-${String(apt.date[1]).padStart(2, '0')}-${String(apt.date[2]).padStart(2, '0')}`;
-                let timeStr = apt.time;
-                if (Array.isArray(apt.time)) timeStr = `${String(apt.time[0]).padStart(2, '0')}:${String(apt.time[1] || 0).padStart(2, '0')}`;
-
-                const start = new Date(`${dateStr}T${timeStr}`);
-                const diffMins = (start - now) / 60000;
-
-                // Show if it's within 24h window (past) OR any time in future
-                // Actually, "Next Call" implies the immediate next one.
-                // If diffMins > -1440, it is valid to handle.
-                return diffMins > -1440;
-            });
-
-            setNextVideoCall(relevant || null);
-
-        } catch (e) {
-            console.error("Failed to check calls", e);
-        }
-    };
 
     if (!user) return null;
 
@@ -118,35 +72,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             </div>
 
             <div className="flex-1 px-3 space-y-2 overflow-y-auto overflow-x-hidden">
-                {/* Next Video Call Section (Patient Only) */}
-                {normalizedRole === 'patient' && isOpen && (
-                    <div className="mb-4 p-3 bg-zinc-900/50 rounded-xl border border-zinc-800">
-                        <div className="flex items-center gap-2 mb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-                            <Video size={14} className="text-violet-500" />
-                            Next Video Call
-                        </div>
-                        {nextVideoCall ? (
-                            <div>
-                                <div className="text-sm font-bold text-white mb-1">Dr. {nextVideoCall.doctor?.user?.name || 'Doctor'}</div>
-                                <div className="text-xs text-slate-500 mb-2">
-                                    {new Date(nextVideoCall.date).toLocaleDateString()} • {nextVideoCall.time}
-                                </div>
-                                <a
-                                    href={`/video-consultation/${nextVideoCall.id}?link=${encodeURIComponent(nextVideoCall.meetingLink)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block w-full text-center bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg text-xs font-bold transition-all animate-pulse"
-                                >
-                                    Join Now
-                                </a>
-                            </div>
-                        ) : (
-                            <div className="text-xs text-slate-500 italic">
-                                No call scheduled
-                            </div>
-                        )}
-                    </div>
-                )}
 
                 {allowedLinks.map((link) => {
                     const Icon = link.icon;

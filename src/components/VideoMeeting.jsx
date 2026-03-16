@@ -1,8 +1,37 @@
 import React from 'react';
 import { XCircle, PhoneOff } from 'lucide-react';
 
-const VideoMeeting = ({ meetingLink, onClose }) => {
+const VideoMeeting = ({ meetingLink, isDoctor = false, onClose }) => {
     if (!meetingLink) return null;
+
+    // Build the iframe URL based on role
+    // For patients, we enforce no prejoin page, no invite functions, and restricted buttons
+    let finalMeetingLink = meetingLink;
+    if (!isDoctor) {
+        const configOptions = {
+            prejoinPageEnabled: false,
+            disableInviteFunctions: true,
+            toolbarButtons: [
+                'microphone',
+                'camera',
+                'hangup'
+            ]
+        };
+        // Append config as hash parameters (Jitsi Iframe API standard)
+        // hide the prejoin page
+        const configParams = [
+            'config.prejoinPageEnabled=false',
+            'config.disableInviteFunctions=true',
+            'config.disableDeepLinking=true',
+            'interfaceConfig.SHOW_JITSI_WATERMARK=false',
+            'interfaceConfig.SHOW_BRAND_WATERMARK=false',
+            'interfaceConfig.SHOW_WATERMARK_FOR_GUESTS=false',
+            'interfaceConfig.HIDE_INVITE_MORE_HEADER=true',
+            'interfaceConfig.TOOLBAR_BUTTONS=["microphone","camera","hangup","tileview"]',
+            'interfaceConfig.SETTINGS_SECTIONS=["devices"]'
+        ];
+        finalMeetingLink += `#${configParams.join('&')}`;
+    }
 
     return (
         <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4">
@@ -26,7 +55,7 @@ const VideoMeeting = ({ meetingLink, onClose }) => {
 
                 {/* Jitsi Iframe */}
                 <iframe
-                    src={meetingLink}
+                    src={finalMeetingLink}
                     title="Video Consultation"
                     allow="camera; microphone; fullscreen; display-capture; autoplay"
                     className="w-full h-full border-0 bg-black"

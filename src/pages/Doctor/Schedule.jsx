@@ -68,6 +68,7 @@ const Schedule = () => {
             {activeMeeting && (
                 <VideoMeeting
                     meetingLink={activeMeeting}
+                    isDoctor={true}
                     onClose={() => setActiveMeeting(null)}
                 />
             )}

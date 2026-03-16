@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 const BookAppointment = () => {
     const { user } = useAuth();
 
-    const [departments, setDepartments] = useState(['General Medicine', 'Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics']);
+    const [departments, setDepartments] = useState(['General Medicine', 'Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics', 'Dermatology', 'Psychiatry']);
     const [doctors, setDoctors] = useState([]);
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const [selectedDoctor, setSelectedDoctor] = useState('');

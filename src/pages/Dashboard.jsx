@@ -23,8 +23,10 @@ const Dashboard = () => {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const isStaff = user.role === 'staff' || user.role === 'STAFF';
+
     useEffect(() => {
-        if (user.role === 'staff') {
+        if (isStaff) {
             fetchStats();
             const interval = setInterval(fetchStats, 30000); // Live update every 30s
             return () => clearInterval(interval);
@@ -33,7 +35,7 @@ const Dashboard = () => {
 
     const fetchStats = async () => {
         try {
-            const response = await api.get('/staff/dashboard/stats');
+            const response = await api.get('/api/staff/dashboard/stats');
             setStats(response.data);
         } catch (error) {
             console.error("Failed to fetch dashboard stats", error);
@@ -42,21 +44,42 @@ const Dashboard = () => {
         }
     };
 
-    const handleEmergencyAlert = () => {
-        // Mocking the future Firebase notification
-        toast.error("EMERGENCY ALERT SENT!\nNotifying: doctor2@hospital.com, doctor3@hospital.com", {
-            duration: 5000,
-            icon: '🚨',
-            style: {
-                background: '#ef4444',
-                color: '#fff',
-                fontWeight: 'bold'
-            },
-        });
-        console.log("Firebase alert placeholder: Triggering notification for doctor2@hospital.com and doctor3@hospital.com");
+    const [emergencyLoading, setEmergencyLoading] = useState(false);
+    const [showEmergencyModal, setShowEmergencyModal] = useState(false);
+    const [patientInfo, setPatientInfo] = useState('');
+    const [emergencyType, setEmergencyType] = useState('');
+    const [alertSuccess, setAlertSuccess] = useState(null); // stores {notifiedDoctors, timestamp, type}
+
+    const handleEmergencyAlert = (type) => {
+        setEmergencyType(type);
+        setShowEmergencyModal(true);
     };
 
-    if (user.role === 'staff') {
+    const confirmEmergencyAlert = async () => {
+        setEmergencyLoading(true);
+        setShowEmergencyModal(false);
+        try {
+            const res = await api.post('/api/staff/emergency-alert', {
+                reportedBy: user?.name || user?.username || 'Staff Member',
+                patientInfo: `[${emergencyType}] ` + (patientInfo.trim() || 'High emergency case - details not specified')
+            });
+            setAlertSuccess({
+                notifiedDoctors: res.data.notifiedDoctors || [],
+                timestamp: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+                type: emergencyType
+            });
+            setPatientInfo('');
+        } catch (err) {
+            toast.error('Failed to send emergency alert: ' + (err.response?.data?.error || err.message), {
+                duration: 5000,
+                style: { background: '#ef4444', color: '#fff' }
+            });
+        } finally {
+            setEmergencyLoading(false);
+        }
+    };
+
+    if (isStaff) {
         if (loading && !stats) return <div className="p-8 text-center text-slate-400">Loading dashboard...</div>;
 
         return (
@@ -64,23 +87,63 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold text-slate-200">Staff Dashboard</h1>
-                        <p className="text-slate-400">Overview & Real-time Metrics</p>
+                        <p className="text-slate-400">Overview &amp; Real-time Metrics</p>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <button
-                            onClick={handleEmergencyAlert}
-                            className="bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-[0_0_15px_rgba(239,68,68,0.4)] hover:shadow-[0_0_25px_rgba(239,68,68,0.6)] transition-all animate-pulse"
-                        >
-                            <Siren size={20} />
-                            TRIGGER EMERGENCY
-                        </button>
-                        <div className="bg-zinc-900 px-4 py-2 rounded-lg border border-zinc-800 text-sm font-medium text-slate-400 hidden sm:block">
-                            {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                        </div>
+                    <div className="bg-zinc-900 px-4 py-2 rounded-lg border border-zinc-800 text-sm font-medium text-slate-400 hidden sm:block">
+                        {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                     </div>
                 </div>
 
+                {/* Emergency Alert Section - 3 large centered buttons */}
+                <div className="bg-red-950/30 border border-red-900/50 rounded-2xl p-6">
+                    <div className="flex items-center gap-3 mb-5">
+                        <div className="bg-red-600/20 p-2 rounded-full">
+                            <Siren size={20} className="text-red-500 animate-pulse" />
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-bold text-red-400">Emergency Alert System</h2>
+                            <p className="text-sm text-slate-500">Instantly notify on-call doctors (doctor1 &amp; doctor2) via email</p>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Poison Emergency */}
+                        <button
+                            onClick={() => handleEmergencyAlert('POISON')}
+                            disabled={emergencyLoading}
+                            className="bg-yellow-950/40 hover:bg-yellow-900/50 border-2 border-yellow-700/50 hover:border-yellow-500 rounded-xl p-6 text-center transition-all duration-200 hover:shadow-[0_0_20px_rgba(234,179,8,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <div className="text-5xl mb-3">☠️</div>
+                            <h3 className="text-xl font-bold text-yellow-400">POISON</h3>
+                            <p className="text-xs text-slate-500 mt-1">Toxic substance ingestion</p>
+                        </button>
+                        {/* Accident Emergency */}
+                        <button
+                            onClick={() => handleEmergencyAlert('ACCIDENT')}
+                            disabled={emergencyLoading}
+                            className="bg-orange-950/40 hover:bg-orange-900/50 border-2 border-orange-700/50 hover:border-orange-500 rounded-xl p-6 text-center transition-all duration-200 hover:shadow-[0_0_20px_rgba(249,115,22,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <div className="text-5xl mb-3">🚑</div>
+                            <h3 className="text-xl font-bold text-orange-400">ACCIDENT</h3>
+                            <p className="text-xs text-slate-500 mt-1">Trauma / physical injury</p>
+                        </button>
+                        {/* Others Emergency */}
+                        <button
+                            onClick={() => handleEmergencyAlert('OTHERS')}
+                            disabled={emergencyLoading}
+                            className="bg-red-950/40 hover:bg-red-900/50 border-2 border-red-700/50 hover:border-red-500 rounded-xl p-6 text-center transition-all duration-200 hover:shadow-[0_0_20px_rgba(239,68,68,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <div className="text-5xl mb-3">🚨</div>
+                            <h3 className="text-xl font-bold text-red-400">OTHERS</h3>
+                            <p className="text-xs text-slate-500 mt-1">All other emergencies</p>
+                        </button>
+                    </div>
+                    {emergencyLoading && (
+                        <p className="text-center text-red-400 font-bold mt-4 animate-pulse">⏳ Sending emergency alert to doctors...</p>
+                    )}
+                </div>
+
                 {/* Stats Cards */}
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-sm flex items-center justify-between">
                         <div>
@@ -282,6 +345,99 @@ const Dashboard = () => {
                     )}
                 </div>
             </div>
+
+            {/* Emergency Confirmation Modal */}
+            {showEmergencyModal && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-zinc-900 rounded-2xl border border-red-700 shadow-2xl w-full max-w-md p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="bg-red-600/20 p-3 rounded-full">
+                                <Siren size={24} className="text-red-500 animate-pulse" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-red-400">Confirm Emergency Alert</h2>
+                                <p className="text-slate-500 text-sm">This will send urgent emails to doctor1 and doctor2</p>
+                            </div>
+                        </div>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-slate-400 mb-2">Patient / Situation Details</label>
+                            <textarea
+                                rows={3}
+                                value={patientInfo}
+                                onChange={e => setPatientInfo(e.target.value)}
+                                placeholder="e.g. Patient John Doe, ICU Room 5 - cardiac arrest..."
+                                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-white text-sm focus:ring-2 focus:ring-red-500 outline-none resize-none"
+                            />
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowEmergencyModal(false)}
+                                className="flex-1 py-2.5 bg-zinc-700 hover:bg-zinc-600 rounded-lg font-medium text-slate-200 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmEmergencyAlert}
+                                className="flex-1 py-2.5 bg-red-600 hover:bg-red-500 rounded-lg font-bold text-white transition-all shadow-lg shadow-red-900/30"
+                            >
+                                🚨 Send Emergency Alert
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Alert Success Modal */}
+            {alertSuccess && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-zinc-900 rounded-2xl border border-green-700/60 shadow-2xl w-full max-w-md p-6">
+                        {/* Animated checkmark header */}
+                        <div className="flex flex-col items-center mb-5">
+                            <div className="bg-green-600/20 rounded-full p-4 mb-3">
+                                <svg className="w-12 h-12 text-green-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <h2 className="text-2xl font-bold text-green-400">Alert Sent Successfully!</h2>
+                            <p className="text-slate-500 text-sm mt-1">Emergency doctors have been notified</p>
+                        </div>
+
+                        {/* Emergency type badge */}
+                        <div className="flex justify-center mb-4">
+                            <span className={`px-4 py-1.5 rounded-full text-sm font-bold border ${alertSuccess.type === 'POISON'
+                                ? 'bg-yellow-900/30 text-yellow-400 border-yellow-700/50'
+                                : alertSuccess.type === 'ACCIDENT'
+                                    ? 'bg-orange-900/30 text-orange-400 border-orange-700/50'
+                                    : 'bg-red-900/30 text-red-400 border-red-700/50'
+                                }`}>
+                                {alertSuccess.type === 'POISON' ? '☠️' : alertSuccess.type === 'ACCIDENT' ? '🚑' : '🚨'} {alertSuccess.type} EMERGENCY
+                            </span>
+                        </div>
+
+                        {/* Notified doctors */}
+                        <div className="bg-zinc-800/60 rounded-xl p-4 mb-4">
+                            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Doctors Notified via Email</p>
+                            <div className="space-y-2">
+                                {alertSuccess.notifiedDoctors.map((doc, i) => (
+                                    <div key={i} className="flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-green-400 shrink-0"></div>
+                                        <span className="text-slate-200 text-sm font-medium">{doc}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <p className="text-center text-xs text-slate-600 mb-4">Sent at {alertSuccess.timestamp}</p>
+
+                        <button
+                            onClick={() => setAlertSuccess(null)}
+                            className="w-full py-2.5 bg-green-700 hover:bg-green-600 rounded-xl font-bold text-white transition-colors"
+                        >
+                            ✓ Dismiss
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

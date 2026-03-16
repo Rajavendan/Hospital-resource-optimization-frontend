@@ -351,15 +351,14 @@ const DoctorManagement = () => {
                       onChange={handleInputChange}
                       className="w-full pl-10 p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 "
                     >
-                      <option value="">Select Specialization</option>
-                      <option value="General Physician">
-                        General Physician
-                      </option>
-                      <option value="Cardiologist">Cardiologist</option>
-                      <option value="Neurologist">Neurologist</option>
-                      <option value="Orthopedic">Orthopedic</option>
-                      <option value="Pediatrician">Pediatrician</option>
-                      <option value="Dermatologist">Dermatologist</option>
+                      <option value="">Select Department / Specialization</option>
+                      <option value="General Medicine">General Medicine</option>
+                      <option value="Cardiology">Cardiology</option>
+                      <option value="Neurology">Neurology</option>
+                      <option value="Orthopedics">Orthopedics</option>
+                      <option value="Pediatrics">Pediatrics</option>
+                      <option value="Dermatology">Dermatology</option>
+                      <option value="Psychiatry">Psychiatry</option>
                     </select>
                   </div>
                 </div>

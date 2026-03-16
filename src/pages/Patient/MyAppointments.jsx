@@ -45,6 +45,7 @@ const MyAppointments = () => {
             {activeMeeting && (
                 <VideoMeeting
                     meetingLink={activeMeeting}
+                    isDoctor={false}
                     onClose={() => setActiveMeeting(null)}
                 />
             )}
