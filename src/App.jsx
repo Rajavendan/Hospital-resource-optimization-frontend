@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
 import PrivateRoute from './components/PrivateRoute';
 import Login from './pages/Login';
@@ -10,6 +10,9 @@ import Unauthorized from './pages/Auth/Unauthorized';
 import PatientDashboard from './pages/Patient/Dashboard';
 import VideoPage from './pages/VideoPage';
 import Dashboard from './pages/Dashboard';
+import { useEffect, useState } from 'react';
+import { auth } from './firebase';
+import { useNotifications } from './hooks/useNotifications';
 
 // ... (imports)
 
@@ -51,11 +54,39 @@ import { DataProvider } from './context/DataContext';
 
 import { Toaster } from 'react-hot-toast';
 
+/**
+ * NotificationSetup — renders nothing visible.
+ * Retrieves the current Firebase ID token and passes it to useNotifications
+ * so the hook can register the FCM token with the backend.
+ * Only active when the user is authenticated.
+ */
+function NotificationSetup() {
+  const { isAuthenticated } = useAuth();
+  const [idToken, setIdToken] = useState(null);
+
+  useEffect(() => {
+    if (!isAuthenticated) { setIdToken(null); return; }
+    const unsubscribe = auth.onIdTokenChanged(async (fbUser) => {
+      if (fbUser) {
+        const token = await fbUser.getIdToken();
+        setIdToken(token);
+      } else {
+        setIdToken(null);
+      }
+    });
+    return () => unsubscribe();
+  }, [isAuthenticated]);
+
+  useNotifications(idToken);
+  return null;
+}
+
 function App() {
   return (
     <AuthProvider>
       <DataProvider>
         <Router>
+          <NotificationSetup />
           <Toaster position="top-right" reverseOrder={false} />
           <Routes>
             <Route path="/login" element={<Login />} />
