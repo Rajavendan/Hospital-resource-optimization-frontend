@@ -46,7 +46,10 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     return (
         <div className={clsx(
             "h-screen bg-zinc-950 text-slate-200 flex flex-col fixed left-0 top-0 border-r border-zinc-900 z-50 transition-all duration-300 ease-in-out",
-            isOpen ? "w-64" : "w-20"
+            isOpen ? "w-64 translate-x-0" : "w-20 translate-x-0",
+            // Mobile responsiveness: hide by default or based on state
+            "max-md:-translate-x-full",
+            isOpen && "max-md:translate-x-0 max-md:w-64"
         )}>
             <div className={clsx("h-16 flex items-center justify-between px-4 border-b border-zinc-900/50", !isOpen && "justify-center")}>
                 {/* Title Area - Hidden when collapsed */}

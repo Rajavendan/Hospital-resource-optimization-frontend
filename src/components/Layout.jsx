@@ -18,14 +18,22 @@ const Layout = () => {
             <div className="relative flex">
                 <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
+                {/* Mobile Overlay */}
+                {isSidebarOpen && (
+                    <div 
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+                        onClick={() => setIsSidebarOpen(false)}
+                    />
+                )}
+
                 <div
                     className={clsx(
                         'flex-1 flex flex-col transition-all duration-300 ease-in-out',
-                        isSidebarOpen ? 'ml-64' : 'ml-20'
+                        isSidebarOpen ? 'ml-64 max-md:ml-0' : 'ml-20 max-md:ml-0'
                     )}
                 >
-                    <Header />
-                    <main className="flex-1 p-6 overflow-auto">
+                    <Header onMenuClick={() => setIsSidebarOpen(true)} />
+                    <main className="flex-1 p-4 md:p-6 overflow-auto">
                         <div className="max-w-7xl mx-auto">
                             <Outlet />
                         </div>

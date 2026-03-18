@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { LogOut, Clock, Sparkles, Command } from 'lucide-react';
 import CommandPalette from './CommandPalette';
 
-const Header = () => {
+const Header = ({ onMenuClick }) => {
     const { user, logout } = useAuth();
     const [now, setNow] = useState(() => new Date());
     const [paletteOpen, setPaletteOpen] = useState(false);
@@ -28,9 +28,16 @@ const Header = () => {
 
     return (
         <>
-            <header className="h-16 bg-zinc-900/80 backdrop-blur border-b border-zinc-800 flex items-center justify-between px-6 sticky top-0 z-20">
+            <header className="h-16 bg-zinc-900/80 backdrop-blur border-b border-zinc-800 flex items-center justify-between px-4 md:px-6 sticky top-0 z-20">
                 <div className="flex items-center gap-3">
-                    <div className="relative">
+                    <button
+                        onClick={onMenuClick}
+                        className="p-2 -ml-2 rounded-lg hover:bg-zinc-800 text-slate-400 md:hidden"
+                        aria-label="Open Sidebar"
+                    >
+                        <Command size={20} />
+                    </button>
+                    <div className="relative hidden xs:block">
                         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-semibold shadow-[0_0_20px_rgba(139,92,246,0.6)]">
                             {(user?.name || 'S').charAt(0).toUpperCase()}
                         </div>
