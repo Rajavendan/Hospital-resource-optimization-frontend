@@ -140,7 +140,8 @@ const Dashboard = () => {
                     {emergencyLoading && (
                         <p className="text-center text-red-400 font-bold mt-4 animate-pulse">⏳ Sending emergency alert to doctors...</p>
                     )}
-                              {/* Stats Cards */}
+                </div>
+                {/* Stats Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div className="bg-purple/40 backdrop-blur-md p-6 rounded-3xl border border-white/10 shadow-xl flex items-center justify-between group hover:border-violet-500/50 transition-all">
                         <div>
