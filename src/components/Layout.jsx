@@ -2,11 +2,12 @@ import { useState } from 'react'; // Import useState
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import BottomNav from './BottomNav';
 import clsx from 'clsx';
 import Chatbot from './Chatbot/Chatbot'; // Import clsx
 
 const Layout = () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
 
     return (
         <div className="relative min-h-screen bg-gradient-to-br from-black via-zinc-950 to-violet-950 text-slate-100">
@@ -33,13 +34,14 @@ const Layout = () => {
                     )}
                 >
                     <Header onMenuClick={() => setIsSidebarOpen(true)} />
-                    <main className="flex-1 p-4 md:p-6 overflow-auto">
+                    <main className="flex-1 p-4 md:p-6 overflow-auto pb-20 md:pb-6">
                         <div className="max-w-7xl mx-auto">
                             <Outlet />
                         </div>
                     </main>
                 </div>
             </div>
+            <BottomNav />
             <Chatbot />
         </div>
     );

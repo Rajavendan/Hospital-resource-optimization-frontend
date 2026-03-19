@@ -140,109 +140,92 @@ const Dashboard = () => {
                     {emergencyLoading && (
                         <p className="text-center text-red-400 font-bold mt-4 animate-pulse">⏳ Sending emergency alert to doctors...</p>
                     )}
-                </div>
-
-                {/* Stats Cards */}
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-sm flex items-center justify-between">
+                              {/* Stats Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="bg-purple/40 backdrop-blur-md p-6 rounded-3xl border border-white/10 shadow-xl flex items-center justify-between group hover:border-violet-500/50 transition-all">
                         <div>
-                            <p className="text-slate-400 text-sm font-medium">Patients Today</p>
-                            <h3 className="text-3xl font-bold text-slate-200 mt-1">{stats?.totalPatientsToday || 0}</h3>
-                            <div className="text-xs text-slate-500 mt-1 flex gap-2">
-                                <span className="font-bold text-violet-400">{stats?.opdCount || 0} OPD</span>
-                                <span>|</span>
-                                <span className="font-bold text-purple-400">{stats?.appointmentCount || 0} Appts</span>
+                            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Patients Today</p>
+                            <h3 className="text-4xl font-black text-white mt-2">{stats?.totalPatientsToday || 0}</h3>
+                            <div className="text-[10px] text-slate-400 mt-2 flex gap-3 font-bold uppercase tracking-wider">
+                                <span className="text-violet-400">{stats?.opdCount || 0} OPD</span>
+                                <span className="w-1 h-1 bg-slate-700 rounded-full my-auto"></span>
+                                <span className="text-purple-400">{stats?.appointmentCount || 0} Appts</span>
                             </div>
                         </div>
-                        <div className="bg-violet-900/20 p-3 rounded-full text-violet-400"><Users size={24} /></div>
-                    </div>
-                    <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-sm flex items-center justify-between">
-                        <div>
-                            <p className="text-slate-400 text-sm font-medium">Pending Tests</p>
-                            <h3 className="text-3xl font-bold text-orange-400 mt-1">{stats?.pendingTests || 0}</h3>
+                        <div className="bg-violet-600/20 p-4 rounded-2xl text-violet-400 group-hover:scale-110 transition-transform">
+                            <Users size={32} />
                         </div>
-                        <div className="bg-orange-900/20 p-3 rounded-full text-orange-400"><Clock size={24} /></div>
                     </div>
-                    <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-sm flex items-center justify-between">
+                    
+                    <div className="bg-purple/40 backdrop-blur-md p-6 rounded-3xl border border-white/10 shadow-xl flex items-center justify-between group hover:border-orange-500/50 transition-all">
                         <div>
-                            <p className="text-slate-400 text-sm font-medium">Tests Completed</p>
-                            <h3 className="text-3xl font-bold text-green-400 mt-1">{stats?.completedTests || 0}</h3>
+                            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Pending Tests</p>
+                            <h3 className="text-4xl font-black text-orange-400 mt-2">{stats?.pendingTests || 0}</h3>
+                            <p className="text-[10px] text-slate-500 mt-2 font-bold uppercase tracking-wider">Requiring Attention</p>
                         </div>
-                        <div className="bg-green-900/20 p-3 rounded-full text-green-400"><CheckCircle size={24} /></div>
+                        <div className="bg-orange-600/20 p-4 rounded-2xl text-orange-400 group-hover:scale-110 transition-transform">
+                            <Clock size={32} />
+                        </div>
+                    </div>
+
+                    <div className="bg-purple/40 backdrop-blur-md p-6 rounded-3xl border border-white/10 shadow-xl flex items-center justify-between group hover:border-green-500/50 transition-all">
+                        <div>
+                            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Completed Tests</p>
+                            <h3 className="text-4xl font-black text-green-400 mt-2">{stats?.completedTests || 0}</h3>
+                            <p className="text-[10px] text-slate-500 mt-2 font-bold uppercase tracking-wider">Processed Today</p>
+                        </div>
+                        <div className="bg-green-600/20 p-4 rounded-2xl text-green-400 group-hover:scale-110 transition-transform">
+                            <CheckCircle size={32} />
+                        </div>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content Area (Left 2/3) */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="lg:col-span-2 space-y-8">
 
-                        {/* Recent Patient Activity Table */}
-                        <div className="bg-zinc-900 rounded-xl border border-zinc-800 shadow-sm overflow-hidden">
-                            <div className="p-6 border-b border-zinc-800 flex justify-between items-center">
-                                <h3 className="font-bold text-slate-200 flex items-center gap-2">
-                                    <Activity size={20} className="text-violet-500" /> Recent Patient Activity
+                        {/* Recent Patient Activity - Mobile Card Style */}
+                        <div className="bg-purple/40 backdrop-blur-md rounded-3xl border border-white/10 shadow-xl overflow-hidden">
+                            <div className="p-6 border-b border-white/5 flex justify-between items-center">
+                                <h3 className="font-extrabold text-white flex items-center gap-2">
+                                    <Activity size={20} className="text-violet-500" /> Recent Activity
                                 </h3>
-                                <span className="text-xs font-medium bg-zinc-800 text-slate-400 px-2 py-1 rounded">Today</span>
+                                <div className="flex items-center gap-2 bg-black/30 px-3 py-1.5 rounded-full border border-white/5">
+                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live</span>
+                                </div>
                             </div>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm text-left">
-                                    <thead className="bg-zinc-950 text-slate-400 font-medium">
-                                        <tr>
-                                            <th className="px-6 py-3">Patient</th>
-                                            <th className="px-6 py-3">Type</th>
-                                            <th className="px-6 py-3">Assigned Doctor</th>
-                                            <th className="px-6 py-3">Time</th>
-                                            <th className="px-6 py-3">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-zinc-800">
-                                        {stats?.recentActivity?.length === 0 ? (
-                                            <tr>
-                                                <td colSpan="5" className="px-6 py-8 text-center text-slate-500">No activity recorded today</td>
-                                            </tr>
-                                        ) : (
-                                            stats?.recentActivity?.map((activity, idx) => (
-                                                <tr key={idx} className="hover:bg-zinc-800/50">
-                                                    <td className="px-6 py-3 font-medium text-slate-200">{activity.name}</td>
-                                                    <td className="px-6 py-3">
-                                                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${activity.type === 'OPD' ? 'bg-violet-900/20 text-violet-400' : 'bg-purple-900/20 text-purple-400'
-                                                            }`}>
-                                                            {activity.type}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-3 text-slate-400">{activity.doctor}</td>
-                                                    <td className="px-6 py-3 text-slate-500">{activity.time}</td>
-                                                    <td className="px-6 py-3">
-                                                        <span className="px-2 py-1 rounded-full text-xs bg-zinc-800 text-slate-400">
-                                                            {activity.status}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        {/* Doctor Test Counts Bar Chart */}
-                        <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-sm">
-                            <h3 className="font-bold text-slate-200 mb-4 flex items-center gap-2">
-                                <BarChart2 size={20} className="text-purple-500" /> Doctor Workload (Tests)
-                            </h3>
-                            <div className="space-y-4">
-                                {Object.entries(stats?.doctorTestCounts || {}).length === 0 ? (
-                                    <p className="text-slate-500 text-center py-4">No data available</p>
+                            
+                            <div className="p-4 space-y-3">
+                                {stats?.recentActivity?.length === 0 ? (
+                                    <div className="py-12 text-center text-slate-500 italic">No activity recorded today</div>
                                 ) : (
-                                    Object.entries(stats.doctorTestCounts).map(([doctor, count]) => (
-                                        <div key={doctor}>
-                                            <div className="flex justify-between text-xs mb-1">
-                                                <span className="font-medium text-slate-400">{doctor}</span>
-                                                <span className="text-slate-500">{count} tests</span>
+                                    stats?.recentActivity?.map((activity, idx) => (
+                                        <div key={idx} className="bg-black/20 hover:bg-black/40 border border-white/5 p-4 rounded-2xl transition-all group">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 bg-violet-600/10 rounded-xl flex items-center justify-center font-bold text-violet-400 border border-violet-500/20">
+                                                        {activity.name.charAt(0)}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-bold text-white group-hover:text-violet-400 transition-colors">{activity.name}</p>
+                                                        <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Dr. {activity.doctor}</p>
+                                                    </div>
+                                                </div>
+                                                <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border ${
+                                                    activity.type === 'OPD' ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-purple-500/10 text-purple-400 border-purple-500/20'
+                                                }`}>
+                                                    {activity.type}
+                                                </span>
                                             </div>
-                                            <div className="w-full bg-zinc-800 rounded-full h-2.5">
-                                                <div className="bg-purple-500 h-2.5 rounded-full" style={{ width: `${Math.min((count / (stats.pendingTests + 1)) * 100, 100)}%` }}></div>
+                                            <div className="flex justify-between items-center mt-3 pt-3 border-t border-white/5">
+                                                <div className="flex items-center gap-1.5 text-slate-500 text-[10px] font-bold">
+                                                    <Clock size={12} />
+                                                    {activity.time}
+                                                </div>
+                                                <span className="text-xs font-bold text-slate-400 bg-white/5 px-2.5 py-1 rounded-lg border border-white/5">
+                                                    {activity.status}
+                                                </span>
                                             </div>
                                         </div>
                                     ))
@@ -250,23 +233,47 @@ const Dashboard = () => {
                             </div>
                         </div>
 
-                        {/* Daily Volume Visual (Simple Bars for Last 7 Days) */}
-                        <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-sm">
-                            <h3 className="font-bold text-slate-200 mb-4 flex items-center gap-2">
-                                <Activity size={20} className="text-violet-500" /> Daily Test Volume (Last 7 Days)
+                        {/* Doctor Test Counts Bar Chart */}
+                        <div className="bg-purple/40 backdrop-blur-md p-6 rounded-3xl border border-white/10 shadow-xl">
+                            <h3 className="font-extrabold text-white mb-4 flex items-center gap-2">
+                                <BarChart2 size={20} className="text-purple-500" /> Doctor Workload
                             </h3>
-                            <div className="flex items-end justify-between h-32 gap-2">
+                            <div className="space-y-4">
+                                {Object.entries(stats?.doctorTestCounts || {}).length === 0 ? (
+                                    <p className="text-slate-500 text-center py-4">No data available</p>
+                                ) : (
+                                    Object.entries(stats.doctorTestCounts).map(([doctor, count]) => (
+                                        <div key={doctor}>
+                                            <div className="flex justify-between text-[10px] mb-1.5 uppercase font-bold tracking-widest text-slate-500">
+                                                <span>{doctor}</span>
+                                                <span className="text-purple-400">{count} tests</span>
+                                            </div>
+                                            <div className="w-full bg-black/30 rounded-full h-2 shadow-inner border border-white/5">
+                                                <div className="bg-gradient-to-r from-violet-600 to-purple-600 h-2 rounded-full shadow-[0_0_10px_rgba(124,58,237,0.3)] transition-all duration-500" style={{ width: `${Math.min((count / (stats.pendingTests + 1)) * 100, 100)}%` }}></div>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Daily Volume Visual */}
+                        <div className="bg-purple/40 backdrop-blur-md p-6 rounded-3xl border border-white/10 shadow-xl">
+                            <h3 className="font-extrabold text-white mb-4 flex items-center gap-2">
+                                <Activity size={20} className="text-violet-500" /> Daily Test Volume
+                            </h3>
+                            <div className="flex items-end justify-between h-32 gap-3 px-2">
                                 {Object.entries(stats?.dailyVolume || {}).map(([date, count]) => (
-                                    <div key={date} className="flex-1 flex flex-col items-center gap-2 group">
+                                    <div key={date} className="flex-1 flex flex-col items-center gap-3 group">
                                         <div
-                                            className="w-full bg-violet-900/40 hover:bg-violet-600 rounded-t-lg transition-all relative group-hover:bg-violet-500"
-                                            style={{ height: `${Math.max((count / 20) * 100, 5)}%` }} // Scaling roughly
+                                            className="w-full bg-violet-600/20 hover:bg-violet-600 rounded-t-xl transition-all duration-300 relative group-hover:shadow-[0_0_20px_rgba(124,58,237,0.3)]"
+                                            style={{ height: `${Math.max((count / 20) * 100, 8)}%` }}
                                         >
-                                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-[10px] font-black text-violet-400 opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 px-2 py-1 rounded-md border border-white/10 uppercase tracking-tighter">
                                                 {count}
                                             </div>
                                         </div>
-                                        <span className="text-[10px] text-slate-500 rotate-0 truncate w-full text-center">{date.slice(5)}</span>
+                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter w-full text-center">{date.slice(5)}</span>
                                     </div>
                                 ))}
                             </div>
@@ -274,17 +281,21 @@ const Dashboard = () => {
                     </div>
 
                     {/* Notifications Panel (Right 1/3) */}
-                    <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-sm h-fit">
-                        <h3 className="font-bold text-slate-200 mb-4 flex items-center gap-2">
+                    <div className="bg-purple/40 backdrop-blur-md p-6 rounded-3xl border border-white/10 shadow-xl h-fit">
+                        <h3 className="font-extrabold text-white mb-6 flex items-center gap-2">
                             <Bell size={20} className="text-amber-500" /> Notifications
                         </h3>
-                        <div className="space-y-4 max-h-[500px] overflow-y-auto">
-                            {stats?.notifications?.map((note, idx) => (
-                                <div key={idx} className="flex gap-3 items-start p-3 bg-zinc-800/50 rounded-lg border border-zinc-800 text-sm">
-                                    <div className="mt-0.5 w-2 h-2 rounded-full bg-amber-400 shrink-0"></div>
-                                    <p className="text-slate-400">{note}</p>
-                                </div>
-                            ))}
+                        <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                            {stats?.notifications?.length === 0 ? (
+                                <p className="text-slate-500 text-center py-8 italic">No new notifications</p>
+                            ) : (
+                                stats?.notifications?.map((note, idx) => (
+                                    <div key={idx} className="flex gap-4 items-start p-4 bg-black/20 rounded-2xl border border-white/5 text-sm group hover:border-amber-500/30 transition-all">
+                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0 shadow-[0_0_8px_rgba(251,191,36,0.5)] group-hover:scale-125 transition-transform"></div>
+                                        <p className="text-slate-400 leading-relaxed font-medium">{note}</p>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
