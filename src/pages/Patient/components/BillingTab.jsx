@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../../api/axios';
-import { CreditCard, Download, DollarSign } from 'lucide-react';
+import { CreditCard, Download, DollarSign, ChevronDown, ChevronUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const BillingTab = () => {
     const [bills, setBills] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [expandedBillId, setExpandedBillId] = useState(null);
 
     useEffect(() => {
         fetchBilling();
@@ -60,61 +61,68 @@ const BillingTab = () => {
                 <CreditCard className="w-5 h-5 text-violet-500" /> Transaction History
             </h3>
 
-            <div className="overflow-x-auto glass-panel rounded-lg border border-white/10">
-                <table className="min-w-full">
-                    <thead className="bg-white/5 border-b border-white/5">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Date</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Service</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Amount</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                        {bills.map((bill) => (
-                            <tr key={bill.id} className="hover:bg-white/5 transition-colors">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">
-                                    {new Date(bill.visitDate).toLocaleDateString()}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-200">
-                                    <div className="flex flex-col">
-                                        <span className="font-medium text-slate-100">{bill.billingType || 'SERVICE'}</span>
-                                        <span className="text-xs text-slate-500">{bill.description || `Visit ID: ${bill.id}`}</span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-200">
-                                    ${bill.totalAmount?.toFixed(2)}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${bill.paymentStatus === 'PAID' ? 'bg-green-500/20 text-green-300' :
-                                        bill.paymentStatus === 'PARTIAL' ? 'bg-yellow-500/20 text-yellow-300' :
+            <div className="grid grid-cols-1 gap-4">
+                {bills.map((bill) => (
+                    <div 
+                        key={bill.id} 
+                        className="glass-panel p-4 rounded-lg border border-white/10 hover:border-white/20 transition-all cursor-pointer"
+                        onClick={() => setExpandedBillId(expandedBillId === bill.id ? null : bill.id)}
+                    >
+                        <div className="flex justify-between items-center relative">
+                            <div className="flex flex-col w-2/3">
+                                <span className="text-sm text-slate-400">{new Date(bill.visitDate).toLocaleDateString()}</span>
+                                <span className="font-semibold text-slate-100 text-lg truncate whitespace-nowrap">{bill.billingType || 'SERVICE'}</span>
+                            </div>
+                            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-4 w-1/3 justify-end">
+                                <span className="font-bold text-slate-100 text-lg sm:text-xl">${bill.totalAmount?.toFixed(2)}</span>
+                                {expandedBillId === bill.id ? <ChevronUp className="w-5 h-5 text-slate-400 hidden sm:block" /> : <ChevronDown className="w-5 h-5 text-slate-400 hidden sm:block" />}
+                            </div>
+                        </div>
+
+                        {expandedBillId === bill.id && (
+                            <div className="mt-4 pt-4 border-t border-white/10 flex flex-col sm:flex-row justify-between gap-4 animate-in fade-in slide-in-from-top-2">
+                                <div className="space-y-2">
+                                    <p className="text-sm text-slate-300">
+                                        <span className="text-slate-500">Description:</span> {bill.description || `Visit ID: ${bill.id}`}
+                                    </p>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm text-slate-500">Status:</span>
+                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                            bill.paymentStatus === 'PAID' ? 'bg-green-500/20 text-green-300' :
+                                            bill.paymentStatus === 'PARTIAL' ? 'bg-yellow-500/20 text-yellow-300' :
                                             'bg-red-500/20 text-red-300'
                                         }`}>
-                                        {bill.paymentStatus}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 flex gap-2">
+                                            {bill.paymentStatus}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="flex items-end">
                                     {bill.invoicePath ? (
                                         <button
-                                            onClick={() => downloadInvoice(bill)}
-                                            className="text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                downloadInvoice(bill);
+                                            }}
+                                            className="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg transition-colors flex items-center justify-center gap-2 text-sm w-full sm:w-auto"
                                         >
-                                            <Download className="w-4 h-4" /> Invoice
+                                            <Download className="w-4 h-4" /> Download Invoice
                                         </button>
                                     ) : (
-                                        <span className="text-slate-600 text-xs italic">No Invoice</span>
+                                        <span className="text-slate-500 text-sm italic py-2">No Invoice Available</span>
                                     )}
-                                </td>
-                            </tr>
-                        ))}
-                        {bills.length === 0 && (
-                            <tr>
-                                <td colSpan="5" className="px-6 py-4 text-center text-slate-500">No billing history available.</td>
-                            </tr>
+                                </div>
+                            </div>
                         )}
-                    </tbody>
-                </table>
+                        <div className="mt-2 flex justify-center sm:hidden">
+                            {expandedBillId === bill.id ? <ChevronUp className="w-5 h-5 text-slate-500" /> : <ChevronDown className="w-5 h-5 text-slate-500" />}
+                        </div>
+                    </div>
+                ))}
+                {bills.length === 0 && (
+                    <div className="glass-panel p-8 text-center text-slate-400 rounded-lg border border-white/10">
+                        No billing history available.
+                    </div>
+                )}
             </div>
         </div>
     );
