@@ -47,7 +47,10 @@ const PatientDashboard = () => {
                     <h2 className="text-2xl font-bold text-slate-100">
                         {getTitle()}
                     </h2>
-                    <p className="text-slate-400">Welcome back, {user?.name || 'Patient'}</p>
+                    <p className="text-slate-400">
+                        Welcome back, <span className="text-violet-400 font-semibold">{user?.name || 'Patient'}</span>
+                        {user?.customId && <span className="ml-2 bg-slate-800 px-2 py-0.5 rounded text-xs border border-white/5 text-slate-500 uppercase tracking-wider">ID: {user.customId}</span>}
+                    </p>
                 </div>
                 <button
                     onClick={handleChangePassword}

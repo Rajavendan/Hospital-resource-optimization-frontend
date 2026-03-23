@@ -34,7 +34,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         { name: 'Bed Management', path: '/admin/beds', icon: FileText, roles: ['admin'] },
         { name: 'Equipment Management', path: '/admin/equipment', icon: FileText, roles: ['admin'] },
         { name: 'Test Management', path: '/admin/tests', icon: FileText, roles: ['admin'] },
-        { name: 'Billing  Test Handler', path: '/admin/roles', icon: Users, roles: ['admin'] },
+        { name: 'Billing Test Handler', path: '/admin/billing-test-handler', icon: LayoutDashboard, roles: ['admin'] },
         { name: 'Billing', path: '/billing', icon: CreditCard, roles: ['billing'] },
         { name: 'Lab Dashboard', path: '/testhandler', icon: TestTube, roles: ['testhandler'] },
         { name: 'Pharmacy', path: '/pharmacist', icon: Pill, roles: ['pharmacist'] }

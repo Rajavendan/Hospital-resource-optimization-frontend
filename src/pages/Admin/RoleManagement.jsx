@@ -13,7 +13,8 @@ import {
     Key, 
     X,
     Shield,
-    CheckCircle
+    CheckCircle,
+    Plus
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 

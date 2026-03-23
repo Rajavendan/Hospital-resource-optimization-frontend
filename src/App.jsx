@@ -41,6 +41,7 @@ import BedManagementAdmin from './pages/Admin/BedManagement';
 import EquipmentManagementAdmin from './pages/Admin/EquipmentManagement';
 import TestDefinitionAdmin from './pages/Admin/TestDefinition';
 import RoleManagement from './pages/Admin/RoleManagement';
+import BillingTestHandler from './pages/Admin/BillingTestHandler';
 
 import OpdEntry from './pages/Staff/OpdEntry';
 
@@ -118,6 +119,7 @@ function App() {
                 <Route path="/admin/equipment" element={<EquipmentManagementAdmin />} />
                 <Route path="/admin/tests" element={<TestDefinitionAdmin />} />
                 <Route path="/admin/roles" element={<RoleManagement />} />
+                <Route path="/admin/billing-test-handler" element={<BillingTestHandler />} />
               </Route>
 
 

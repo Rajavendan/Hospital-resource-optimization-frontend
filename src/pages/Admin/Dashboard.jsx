@@ -78,6 +78,16 @@ const AdminDashboard = () => {
             border: 'border-rose-500/20',
             path: '/admin/roles',
             stats: 'Admin Only'
+        },
+        {
+            title: 'Billing & Lab',
+            description: 'Financial & Test Oversight',
+            icon: Activity,
+            color: 'text-violet-400',
+            bg: 'bg-violet-500/10',
+            border: 'border-violet-500/20',
+            path: '/admin/billing-test-handler',
+            stats: 'Management'
         }
     ];
 

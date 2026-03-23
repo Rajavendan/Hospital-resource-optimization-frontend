@@ -25,6 +25,8 @@ const PharmacistDashboard = () => {
         if (activeTab === 'inventory') {
             fetchMedicines();
             fetchLowStock();
+        } else if (activeTab === 'dispense') {
+            fetchTodayPrescriptions();
         }
     }, [activeTab]);
 
@@ -38,7 +40,21 @@ const PharmacistDashboard = () => {
         }
     };
 
+    const fetchTodayPrescriptions = async () => {
+        try {
+            const res = await api.get('/api/pharmacy/prescriptions/today');
+            setPrescriptions(res.data);
+            if (res.data.length > 0) {
+                toast.success(`Found ${res.data.length} prescriptions for today`);
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Failed to load today's prescriptions");
+        }
+    };
+
     const fetchLowStock = async () => {
+// ... (rest of the functions)
         try {
             const res = await api.get('/api/pharmacy/low-stock');
             setLowStock(res.data);
@@ -174,8 +190,8 @@ const PharmacistDashboard = () => {
 
             {/* DISPENSING TAB */}
             {activeTab === 'dispense' && (
-                <div className="flex gap-6">
-                    <div className="w-1/3 space-y-4">
+                <div className="flex flex-col lg:flex-row gap-6">
+                    <div className="w-full lg:w-1/3 space-y-4">
                         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                             <h3 className="font-semibold mb-4">Find Patient</h3>
                             <div className="flex gap-2">
@@ -195,6 +211,20 @@ const PharmacistDashboard = () => {
                             </div>
                         </div>
 
+                        <div className="flex items-center justify-between px-2">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">
+                                {patientIdSearch ? 'Search Results' : "Today's Prescriptions"}
+                            </h3>
+                            {patientIdSearch && (
+                                <button 
+                                    onClick={() => { setPatientIdSearch(''); fetchTodayPrescriptions(); }}
+                                    className="text-xs text-violet-600 hover:underline"
+                                >
+                                    Clear Search
+                                </button>
+                            )}
+                        </div>
+
                         {prescriptions.map(p => (
                             <div
                                 key={p.id}
@@ -207,19 +237,27 @@ const PharmacistDashboard = () => {
                                         {p.status}
                                     </span>
                                 </div>
-                                <h4 className="font-medium text-gray-800">Dr. {p.doctor?.name}</h4>
-                                <p className="text-xs text-gray-500">{p.prescribedDate}</p>
+                                <h4 className="font-medium text-gray-800">
+                                    Patient: {p.patient?.name || 'Unknown'}
+                                </h4>
+                                <div className="flex justify-between items-center mt-1">
+                                    <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Dr. {p.doctor?.name}</p>
+                                    <p className="text-[10px] text-gray-500">{new Date(p.createdAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</p>
+                                </div>
                             </div>
                         ))}
                     </div>
 
-                    <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="w-full lg:flex-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         {selectedPrescription ? (
                             <div>
                                 <div className="flex justify-between items-start mb-6 border-b pb-4">
                                     <div>
-                                        <h2 className="text-xl font-bold">Prescription Details</h2>
-                                        <p className="text-gray-500 text-sm">Patient ID: {selectedPrescription.patient?.id}</p>
+                                        <h2 className="text-xl font-bold">{selectedPrescription.patient?.name || 'Patient Details'}</h2>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className="text-xs font-black uppercase tracking-widest text-slate-400 bg-slate-100 px-2 py-0.5 rounded">ID: {selectedPrescription.patient?.customId || selectedPrescription.patient?.id}</span>
+                                            <span className="text-xs text-gray-400">• Prescribed by Dr. {selectedPrescription.doctor?.name}</span>
+                                        </div>
                                     </div>
                                     {selectedPrescription.status === 'PENDING' ? (
                                         <button
