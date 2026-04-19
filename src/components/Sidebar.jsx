@@ -37,7 +37,8 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         { name: 'Billing Test Handler', path: '/admin/billing-test-handler', icon: LayoutDashboard, roles: ['admin'] },
         { name: 'Billing', path: '/billing', icon: CreditCard, roles: ['billing'] },
         { name: 'Lab Dashboard', path: '/testhandler', icon: TestTube, roles: ['testhandler'] },
-        { name: 'Pharmacy', path: '/pharmacist', icon: Pill, roles: ['pharmacist'] }
+        { name: 'Pharmacy', path: '/pharmacist', icon: Pill, roles: ['pharmacist'] },
+        { name: 'Settings', path: '/settings', icon: Settings, roles: ['patient'] }
     ];
 
     const normalizedRole = user.role ? user.role.toLowerCase() : '';

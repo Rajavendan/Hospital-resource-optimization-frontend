@@ -28,6 +28,8 @@ const MyAppointments = () => {
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
 
+
+
     const myAppointments = appointments;
 
     const getDoctorName = (id) => {
@@ -115,14 +117,17 @@ const MyAppointments = () => {
                             View and manage your upcoming medical consultations
                         </p>
                     </div>
-                    <button
-                        onClick={handleRefresh}
-                        disabled={refreshing}
-                        className="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-white/5 text-white rounded-xl hover:bg-slate-800 disabled:opacity-50 transition-all font-bold text-sm"
-                    >
-                        <RefreshCw size={16} className={refreshing ? 'animate-spin text-blue-500' : ''} />
-                        {refreshing ? 'Syncing...' : 'Sync'}
-                    </button>
+                    <div className="flex gap-2">
+
+                        <button
+                            onClick={handleRefresh}
+                            disabled={refreshing}
+                            className="flex items-center gap-2 px-4 py-2 bg-slate-900 border border-white/5 text-white rounded-xl hover:bg-slate-800 disabled:opacity-50 transition-all font-bold text-sm"
+                        >
+                            <RefreshCw size={16} className={refreshing ? 'animate-spin text-blue-500' : ''} />
+                            {refreshing ? 'Syncing...' : 'Sync'}
+                        </button>
+                    </div>
                 </div>
 
                 {/* List Grid */}

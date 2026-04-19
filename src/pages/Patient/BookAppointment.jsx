@@ -17,6 +17,10 @@ const BookAppointment = () => {
     const [loading, setLoading] = useState(false);
     const [bookingStatus, setBookingStatus] = useState(null);
     const [consultationType, setConsultationType] = useState('PHYSICAL');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [countdown, setCountdown] = useState(null);
+
+
 
     useEffect(() => {
         if (selectedDepartment) {
@@ -34,6 +38,24 @@ const BookAppointment = () => {
             setDoctors([]);
         }
     }, [selectedDepartment]);
+
+    useEffect(() => {
+        let timer;
+        if (bookingStatus) {
+            setCountdown(5);
+            timer = setInterval(() => {
+                setCountdown(prev => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        resetForm();
+                        return null;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+        return () => clearInterval(timer);
+    }, [bookingStatus]);
 
     useEffect(() => {
         if (selectedDoctor && selectedDate) {
@@ -67,7 +89,8 @@ const BookAppointment = () => {
             appointmentDate: selectedDate,
             appointmentTime: selectedTime.substring(0, 5),
             status: 'SCHEDULED',
-            consultationType: consultationType
+            consultationType: consultationType,
+            phoneNumber: phoneNumber
         };
 
         try {
@@ -152,7 +175,7 @@ const BookAppointment = () => {
                     onClick={resetForm}
                     className="mt-8 bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
                 >
-                    Book Another Appointment
+                    Book Another Appointment {countdown !== null && `(${countdown}s)`}
                 </button>
             </div>
         );
@@ -160,7 +183,9 @@ const BookAppointment = () => {
 
     return (
         <div className="max-w-2xl mx-auto ">
-            <h1 className="text-2xl font-bold text-slate mb-6">Book New Appointment</h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold text-slate">Book New Appointment</h1>
+            </div>
 
             <div className="bg-black rounded-xl shadow-sm border border-slate-100 p-8">
                 <form onSubmit={handleBook} className="space-y-6">
@@ -274,6 +299,22 @@ const BookAppointment = () => {
                         {selectedDoctor && selectedDate && availableSlots.length === 0 && (
                             <p className="text-xs text-red-500 mt-1">No slots available for this date.</p>
                         )}
+                    </div>
+
+                    {/* Phone Number Logic */}
+                    <div>
+                        <label className="block text-sm font-bold text-slate mb-2">My Contact Number (for SMS Alerts)</label>
+                        <div className="relative">
+                            <span className="absolute left-3 top-3.5 text-slate-400">📞</span>
+                            <input
+                                type="tel"
+                                className="w-full p-3 pl-10 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                placeholder="e.g., 9444991878"
+                                required
+                            />
+                        </div>
                     </div>
 
                     <button

@@ -16,15 +16,7 @@ const PatientDashboard = () => {
     const [searchParams] = useSearchParams();
     const activeTab = searchParams.get('tab') || 'visits';
 
-    const handleChangePassword = async () => {
-        try {
-            await api.post('/api/patient/change-password-link');
-            toast.success('Reset link sent to your email!');
-        } catch (error) {
-            console.error(error);
-            toast.error('Failed to send reset link.');
-        }
-    };
+
 
     const getTitle = () => {
         switch (activeTab) {
@@ -52,12 +44,7 @@ const PatientDashboard = () => {
                         {user?.customId && <span className="ml-2 bg-slate-800 px-2 py-0.5 rounded text-xs border border-white/5 text-slate-500 uppercase tracking-wider">ID: {user.customId}</span>}
                     </p>
                 </div>
-                <button
-                    onClick={handleChangePassword}
-                    className="bg-violet-600 text-white px-4 py-2 rounded-lg hover:bg-violet-700 transition font-medium shadow-sm"
-                >
-                    Change Password
-                </button>
+
             </header>
 
             <div className="glass-panel rounded-2xl p-6 min-h-[600px]">

@@ -50,6 +50,7 @@ import TestAssignment from './components/TestAssignment';
 import BillingDashboard from './pages/Billing/Dashboard';
 import TestHandlerDashboard from './pages/TestHandler/TestHandlerDashboard';
 import PharmacistDashboard from './pages/Pharmacist/Dashboard';
+import Settings from './pages/Settings';
 
 import { DataProvider } from './context/DataContext';
 
@@ -152,6 +153,11 @@ function App() {
               {/* Pharmacist Routes */}
               <Route element={<PrivateRoute allowedRoles={['pharmacist', 'PHARMACIST']} />}>
                 <Route path="/pharmacist" element={<PharmacistDashboard />} />
+              </Route>
+              
+              {/* Settings - Patient Only */}
+              <Route element={<PrivateRoute allowedRoles={['patient']} />}>
+                <Route path="/settings" element={<Settings />} />
               </Route>
             </Route>
 

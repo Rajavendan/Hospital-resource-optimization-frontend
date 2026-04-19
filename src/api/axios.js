@@ -7,7 +7,7 @@ const api = axios.create({
   baseURL: BASE_URL,
 });
 
-console.log("✅ Axios Base URL:", BASE_URL);
+// console.log("✅ Axios Base URL:", BASE_URL);
 
 // Attach Firebase ID token
 api.interceptors.request.use(async (config) => {
@@ -15,7 +15,7 @@ api.interceptors.request.use(async (config) => {
 
   if (user) {
     const token = await user.getIdToken(true); // Force refresh to get latest Custom Claims (Role)
-    console.log("🔑 Adding token to header:", token.substring(0, 10) + "...");
+    // console.log("🔑 Adding token to header:", token.substring(0, 10) + "...");
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -27,7 +27,7 @@ api.interceptors.request.use(async (config) => {
 
 api.interceptors.response.use(
   (response) => {
-    console.log("✅ Axios Response Success:", response.status, response.config.url);
+    // console.log("✅ Axios Response Success:", response.status, response.config.url);
     return response;
   },
   (error) => {
